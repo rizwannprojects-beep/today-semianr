@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@source "../index.html";
+@source "./**/*.{js,jsx,ts,tsx}";
+@source "../src/**/*.{js,jsx,ts,tsx}";
+
+@layer base {
+  :root {
+    --font-heading: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Primary Palette */
+    --primary: #00695C;
+    --primary-dark: #004D40;
+    --primary-light: #E0F2F1;
+    --primary-very-light: #F1FAF9;
+    --secondary: #00897B;
+
+    /* Accent Orange Palette */
+    --accent: #FF9800;
+    --accent-bright: #F57C00;
+    --accent-light: #FFF3E0;
+
+    /* Status Colors */
+    --success: #2E7D32;
+    --success-light: #E8F5E9;
+    --error: #D32F2F;
+    --error-light: #FFEBEE;
+    --warning: #F9A825;
+    --warning-light: #FFF8E1;
+    --info: #1976D2;
+    --info-light: #E3F2FD;
+
+    /* Backgrounds & Surfaces */
+    --background: #F7FAFC;
+    --surface: #FFFFFF;
+    --hover-bg: #F0F7F6;
+    --border: #D9E2E8;
+
+    /* Typography Colors */
+    --text-primary: #16324F;
+    --text-secondary: #526579;
+    --text-muted: #718096;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Crisp Clean Scrollbar for Light Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7FAFC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
