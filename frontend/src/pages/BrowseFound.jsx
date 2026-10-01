@@ -404,8 +404,8 @@ export const BrowseFound = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item) => {
-            const hasImage = item.images && item.images.length > 0;
-            const primaryImage = hasImage ? item.images[0] : null;
+            const primaryImage = (item.images && item.images.length > 0 ? item.images[0] : null) || item.primaryImage || item.image;
+            const hasImage = Boolean(primaryImage);
             const itemTitle = item.itemName || item.title || 'Found Property';
             const itemLoc = item.location || item.foundLocation || 'Campus Ground';
             const itemDate = item.dateFound || item.date || item.createdAt;

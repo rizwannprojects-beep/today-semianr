@@ -12,6 +12,7 @@ import {
   Camera
 } from 'lucide-react';
 import itemService from '../services/itemService.js';
+import { INITIAL_LOST_ITEMS, INITIAL_FOUND_ITEMS } from '../services/mockData.js';
 import useAuth from '../hooks/useAuth.js';
 import StatusBadge from '../components/StatusBadge.jsx';
 import Button from '../components/Button.jsx';
@@ -60,18 +61,25 @@ export const ItemDetails = () => {
         const fetchedItem = res?.data?.item || res?.data?.data || res?.data;
         if (fetchedItem) {
           setItem(fetchedItem);
-        } else {
-          setError('Item record not found or has been removed.');
+          return;
         }
       } catch (err) {
-        console.error('Error loading item:', err);
-        setError(err.response?.data?.message || err.message || 'Unable to retrieve item information.');
-      } finally {
-        setLoading(false);
+        console.warn('API fetch by ID failed, checking campus item registry:', err.message);
       }
+
+      // Fallback to local item registry
+      const localItem = [...INITIAL_LOST_ITEMS, ...INITIAL_FOUND_ITEMS].find(
+        (i) => i._id === id || i.id === id || i.itemCode === id
+      );
+      if (localItem) {
+        setItem(localItem);
+      } else {
+        setError('Item record not found or has been removed.');
+      }
+      setLoading(false);
     };
 
-    fetchItem();
+    fetchItem().finally(() => setLoading(false));
   }, [type, id]);
 
   const isFound =
@@ -83,7 +91,9 @@ export const ItemDetails = () => {
   const isOwner =
     user && item && (item.reporter === user._id || item.reporter?._id === user._id || item.user === user._id);
 
-  const images = item?.images && item.images.length > 0 ? item.images : [];
+  const images = item?.images && item.images.length > 0
+    ? item.images
+    : (item?.primaryImage ? [item.primaryImage] : (item?.image ? [item.image] : []));
 
   const handleClaimSubmit = async (e) => {
     e.preventDefault();
@@ -260,11 +270,18 @@ export const ItemDetails = () => {
             {/* Header info */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#D9E2E8] pb-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#16324F] tracking-tight">
-                  {itemName}
-                </h1>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-[#16324F] tracking-tight">
+                    {itemName}
+                  </h1>
+                  {item.itemCode && (
+                    <span className="text-xs font-mono font-bold text-[#00695C] bg-[#E0F2F1] px-2.5 py-1 rounded-md border border-[#B2DFDB]">
+                      {item.itemCode}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-[#526579] font-medium mt-1">
-                  Reported on {new Date(item.createdAt).toLocaleDateString()} &bull; Category: {item.category}
+                  Reported on {new Date(item.createdAt || item.date || Date.now()).toLocaleDateString()} &bull; Category: {item.category}
                 </p>
               </div>
 

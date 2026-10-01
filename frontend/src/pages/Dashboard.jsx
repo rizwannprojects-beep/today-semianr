@@ -37,33 +37,51 @@ export const Dashboard = () => {
   const [returnsCount, setReturnsCount] = useState(0);
   const [unreadNotifCount, setUnreadNotifCount] = useState(4);
 
-  // Presentation items specified in Section 11
+  // Presentation items specified in Section 11 with rich photos and identifiers
   const defaultRecentItems = [
     {
       _id: 'lost-item-1',
+      itemCode: 'LF-2026-0001',
       itemName: 'Black HP Laptop',
       category: 'Electronics',
+      type: 'lost',
       status: 'lost',
       location: 'College Library',
       date: 'September 28, 2026',
+      brand: 'HP',
+      color: 'Black',
+      primaryImage: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
+      images: ['https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80'],
       icon: Laptop
     },
     {
       _id: 'found-item-2',
+      itemCode: 'LF-2026-0006',
       itemName: 'Blue Water Bottle',
       category: 'Personal Items',
+      type: 'found',
       status: 'found',
-      location: 'Block A',
+      location: 'Block A, Room 104',
       date: 'September 26, 2026',
+      brand: 'Milton',
+      color: 'Blue',
+      primaryImage: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80',
+      images: ['https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80'],
       icon: CupSoda
     },
     {
       _id: 'lost-item-3',
+      itemCode: 'LF-2026-0007',
       itemName: 'Student ID Card',
       category: 'Documents',
+      type: 'found',
       status: 'returned',
-      location: 'Computer Lab',
+      location: 'Computer Lab 3',
       date: 'September 25, 2026',
+      brand: 'Campus Security',
+      color: 'White/Blue',
+      primaryImage: 'https://images.unsplash.com/photo-1589330694653-dad6d3240e2b?auto=format&fit=crop&w=600&q=80',
+      images: ['https://images.unsplash.com/photo-1589330694653-dad6d3240e2b?auto=format&fit=crop&w=600&q=80'],
       icon: CreditCard
     }
   ];
@@ -132,6 +150,17 @@ export const Dashboard = () => {
 
       if (allUserItems.length > 0) {
         setRecentItems(allUserItems.slice(0, 5));
+      } else {
+        // Fallback to recent items from campus registry so live items with photos are shown
+        try {
+          const generalItemsRes = await itemService.getItems({ limit: 5 });
+          const gItems = generalItemsRes?.data?.data || generalItemsRes?.data?.items || generalItemsRes?.data;
+          if (Array.isArray(gItems) && gItems.length > 0) {
+            setRecentItems(gItems);
+          }
+        } catch (e) {
+          // keep defaults
+        }
       }
 
       if (myMatchesRes.status === 'fulfilled' && myMatchesRes.value?.data) {
@@ -372,23 +401,58 @@ export const Dashboard = () => {
           <div className="space-y-3 pt-1">
             {recentItems.map((item) => {
               const ItemIcon = item.icon || Package;
+              const itemImg = item.primaryImage || (item.images && item.images.length > 0 ? item.images[0] : null) || item.image;
+              const itemType = (item.type || (item.status === 'lost' || item.status === 'LOST' ? 'lost' : 'found')).toLowerCase();
+              const itemLink = `/item/${itemType}/${item._id}`;
+              const formattedDate = item.date || (item.dateLost || item.dateFound ? new Date(item.dateLost || item.dateFound).toLocaleDateString() : 'Recent');
+
               return (
                 <div
                   key={item._id}
-                  className="p-3.5 sm:p-4 rounded-xl bg-[#F7FAFC] border border-[#D9E2E8] hover:border-[#00897B] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                  className="p-3.5 sm:p-4 rounded-xl bg-[#F7FAFC] border border-[#D9E2E8] hover:border-[#00897B] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-[#E0F2F1] border border-[#B2DFDB] flex items-center justify-center text-[#00695C] shrink-0">
-                      <ItemIcon className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0 space-y-0.5">
+                    <Link
+                      to={itemLink}
+                      className="w-14 h-14 rounded-xl overflow-hidden bg-[#F0F7F6] border border-[#D9E2E8] hover:border-[#00897B] shrink-0 flex items-center justify-center group/thumb shadow-2xs"
+                    >
+                      {itemImg ? (
+                        <img
+                          src={itemImg}
+                          alt={item.itemName}
+                          className="w-full h-full object-cover group-hover/thumb:scale-108 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-full h-full flex items-center justify-center text-[#00695C] ${itemImg ? 'hidden' : 'flex'}`}>
+                        <ItemIcon className="w-6 h-6" />
+                      </div>
+                    </Link>
+
+                    <div className="min-w-0 space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-sm text-[#16324F] truncate max-w-[220px] sm:max-w-[280px]">
+                        <Link
+                          to={itemLink}
+                          className="font-bold text-sm text-[#16324F] hover:text-[#00695C] transition-colors truncate max-w-[200px] sm:max-w-[260px]"
+                        >
                           {item.itemName}
-                        </span>
+                        </Link>
+                        {item.itemCode && (
+                          <span className="text-[10px] font-mono font-bold text-[#00695C] bg-[#E0F2F1] px-1.5 py-0.5 rounded border border-[#B2DFDB]">
+                            {item.itemCode}
+                          </span>
+                        )}
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[#526579] bg-white px-2 py-0.5 rounded border border-[#D9E2E8] whitespace-nowrap">
                           {item.category}
                         </span>
+                        {(item.brand || item.color) && (
+                          <span className="hidden md:inline text-[10px] text-[#526579] font-medium bg-[#F0F7F6] px-1.5 py-0.5 rounded border border-[#D9E2E8]">
+                            {[item.brand, item.color].filter(Boolean).join(' • ')}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-3 text-xs text-[#526579] truncate">
                         <span className="flex items-center gap-1 text-[#00695C] font-medium truncate">
@@ -398,7 +462,7 @@ export const Dashboard = () => {
                         <span>•</span>
                         <span className="flex items-center gap-1 shrink-0">
                           <Clock className="w-3.5 h-3.5 shrink-0" />
-                          {item.date}
+                          {formattedDate}
                         </span>
                       </div>
                     </div>
@@ -406,9 +470,9 @@ export const Dashboard = () => {
 
                   <div className="flex items-center justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#D9E2E8]/60">
                     <StatusBadge status={item.status} />
-                    <Link to={item.status === 'lost' ? '/my-reports' : '/browse-found'}>
-                      <Button variant="outline" size="xs">
-                        View
+                    <Link to={itemLink}>
+                      <Button variant="outline" size="xs" className="font-bold hover:border-[#00695C]">
+                        View Details
                       </Button>
                     </Link>
                   </div>

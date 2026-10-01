@@ -403,8 +403,8 @@ export const BrowseLost = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item) => {
-            const hasImage = item.images && item.images.length > 0;
-            const primaryImage = hasImage ? item.images[0] : null;
+            const primaryImage = (item.images && item.images.length > 0 ? item.images[0] : null) || item.primaryImage || item.image;
+            const hasImage = Boolean(primaryImage);
             const itemTitle = item.itemName || item.title || 'Reported Lost Item';
             const itemLoc = item.location || item.lostLocation || 'Campus';
             const itemDate = item.dateLost || item.date || item.createdAt;

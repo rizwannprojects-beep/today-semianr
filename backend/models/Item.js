@@ -62,6 +62,11 @@ const ItemSchema = new mongoose.Schema(
       type: [String],
       default: []
     },
+    primaryImage: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     color: {
       type: String,
       trim: true,
@@ -258,6 +263,13 @@ ItemSchema.pre('validate', function (next) {
     this.holdingLocation = this.storageLocation;
   } else if (!this.storageLocation && this.holdingLocation) {
     this.storageLocation = this.holdingLocation;
+  }
+
+  // Synchronize primaryImage and images array
+  if (this.primaryImage && (!this.images || this.images.length === 0)) {
+    this.images = [this.primaryImage];
+  } else if ((!this.primaryImage || this.primaryImage === '') && this.images && this.images.length > 0) {
+    this.primaryImage = this.images[0];
   }
 
   next();

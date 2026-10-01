@@ -276,37 +276,66 @@ export const Home = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {recentFound.map((item) => (
-              <Card key={item._id} hover className="flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-[#2E7D32] uppercase tracking-wider">
-                      {item.category}
-                    </span>
-                    <StatusBadge status={item.status} />
-                  </div>
-                  <h3 className="font-bold text-base text-[#16324F] line-clamp-1">{item.itemName}</h3>
-                  <p className="text-xs text-[#526579] line-clamp-2">{item.description}</p>
-                </div>
-                <div className="pt-3 border-t border-[#D9E2E8] space-y-1.5 text-[11px] text-[#526579]">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#2E7D32] shrink-0" />
-                    <span className="truncate">{item.foundLocation || item.location}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#718096] shrink-0" />
-                    <span>{new Date(item.foundDate || item.dateFound || item.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <div className="pt-2">
-                    <Link to={`/item/found/${item._id}`}>
-                      <Button variant="secondary" size="xs" className="w-full text-xs">
-                        View Details
-                      </Button>
+            {recentFound.map((item) => {
+              const primaryImg = item.primaryImage || (item.images && item.images.length > 0 ? item.images[0] : null) || item.image;
+              const itemDate = item.foundDate || item.dateFound || item.date || item.createdAt;
+
+              return (
+                <Card key={item._id} hover className="flex flex-col justify-between overflow-hidden group shadow-xs">
+                  <div className="space-y-3">
+                    <Link to={`/item/found/${item._id}`} className="block relative aspect-video w-full rounded-xl overflow-hidden bg-[#F7FAFC] border border-[#D9E2E8]">
+                      {primaryImg ? (
+                        <img
+                          src={primaryImg}
+                          alt={item.itemName}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=400&q=80';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-[#718096]">
+                          <Package className="w-8 h-8 opacity-40 mb-1 text-[#00695C]" />
+                          <span className="text-[10px] font-medium text-[#718096]">Found Item</span>
+                        </div>
+                      )}
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/95 text-[#00695C] border border-[#B2DFDB] shadow-2xs">
+                        {item.category}
+                      </span>
+                      <div className="absolute top-2 right-2">
+                        <StatusBadge status={item.status} />
+                      </div>
                     </Link>
+
+                    <div>
+                      <Link to={`/item/found/${item._id}`} className="block font-bold text-base text-[#16324F] hover:text-[#00695C] transition-colors line-clamp-1">
+                        {item.itemName}
+                      </Link>
+                      <p className="text-xs text-[#526579] line-clamp-2 mt-1">{item.description}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+
+                  <div className="pt-3 border-t border-[#D9E2E8] space-y-1.5 text-[11px] text-[#526579]">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#2E7D32] shrink-0" />
+                      <span className="truncate">{item.foundLocation || item.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#718096] shrink-0" />
+                      <span>{new Date(itemDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="pt-2">
+                      <Link to={`/item/found/${item._id}`} className="block w-full">
+                        <Button variant="secondary" size="xs" className="w-full text-xs font-bold">
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         )}
       </section>
