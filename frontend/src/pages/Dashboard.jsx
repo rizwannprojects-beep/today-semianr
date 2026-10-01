@@ -27,66 +27,113 @@ export const Dashboard = () => {
   const { user } = useAuth();
 
   // Preset presentation statistics according to Section 8
-  const [lostCount, setLostCount] = useState(2);
-  const [foundCount, setFoundCount] = useState(1);
-  const [matchesCount, setMatchesCount] = useState(1);
-  const [claimsCount, setClaimsCount] = useState(1);
-  const [returnsCount, setReturnsCount] = useState(0);
-  const [unreadNotifCount, setUnreadNotifCount] = useState(3);
+  const [lostCount, setLostCount] = useState(4);
+  const [foundCount, setFoundCount] = useState(3);
+  const [matchesCount, setMatchesCount] = useState(2);
+  const [claimsCount, setClaimsCount] = useState(2);
+  const [returnsCount, setReturnsCount] = useState(1);
+  const [unreadNotifCount, setUnreadNotifCount] = useState(4);
 
   // Presentation items specified in Section 8
   const defaultRecentItems = [
     {
-      _id: 'item-demo-1',
-      itemName: 'Black HP Laptop',
-      category: 'Electronics',
+      _id: 'lost-item-1',
+      itemName: 'Apple MacBook Air M2 Space Gray',
+      category: 'Laptop',
       status: 'lost',
-      lostLocation: 'College Library',
-      location: 'College Library',
+      lostLocation: 'Central Library Floor 3',
+      location: 'Central Library Floor 3',
       date: 'September 28, 2026',
       badgeColor: 'red'
     },
     {
-      _id: 'item-demo-2',
-      itemName: 'Blue Water Bottle',
-      category: 'Personal Items',
+      _id: 'found-item-1',
+      itemName: 'Sony WH-1000XM5 Wireless Headphones',
+      category: 'Electronics',
       status: 'found',
-      lostLocation: 'Main Block',
-      location: 'Main Block',
-      date: 'September 26, 2026',
+      lostLocation: 'Engineering Quad',
+      location: 'Engineering Quad',
+      date: 'September 30, 2026',
       badgeColor: 'teal'
     },
     {
-      _id: 'item-demo-3',
-      itemName: 'Leather Wallet',
-      category: 'Personal Items',
+      _id: 'lost-item-2',
+      itemName: 'Brown Leather Fossil Bi-Fold Wallet',
+      category: 'Wallet',
       status: 'matching',
-      lostLocation: 'Seminar Hall',
-      location: 'Seminar Hall',
-      date: 'September 25, 2026',
+      lostLocation: 'Campus Auditorium',
+      location: 'Campus Auditorium',
+      date: 'September 27, 2026',
       badgeColor: 'orange'
+    },
+    {
+      _id: 'lost-item-3',
+      itemName: 'Student Identity Card & Teal Lanyard',
+      category: 'ID Card',
+      status: 'lost',
+      lostLocation: 'Student Activity Center / Cafeteria',
+      location: 'Student Activity Center',
+      date: 'September 29, 2026',
+      badgeColor: 'red'
+    },
+    {
+      _id: 'found-item-2',
+      itemName: 'Blue Hydro Flask Water Bottle (32oz)',
+      category: 'Accessories',
+      status: 'found',
+      lostLocation: 'Science & Engineering Block',
+      location: 'Science Block Room 204',
+      date: 'September 29, 2026',
+      badgeColor: 'teal'
+    },
+    {
+      _id: 'found-item-3',
+      itemName: 'Casio Scientific Calculator FX-991CW',
+      category: 'Electronics',
+      status: 'found',
+      lostLocation: 'Computer & IT Complex',
+      location: 'Computer Lab 3',
+      date: 'September 28, 2026',
+      badgeColor: 'teal'
+    },
+    {
+      _id: 'lost-item-6',
+      itemName: 'Dell 65W Type-C Laptop Fast Charger',
+      category: 'Charger',
+      status: 'lost',
+      lostLocation: 'Central Library',
+      location: 'Central Library Desk #12',
+      date: 'September 25, 2026',
+      badgeColor: 'red'
     }
   ];
 
   const defaultNotifications = [
     {
       id: 'notif-1',
-      title: 'Potential match found!',
-      message: 'Your Black HP Laptop has a possible match.',
+      title: 'High-confidence match found! (96%)',
+      message: 'Your Student ID Card has a 96% match found at Cafeteria.',
       time: '10 mins ago',
       type: 'match'
     },
     {
       id: 'notif-2',
-      title: 'Claim approved',
-      message: 'Your ownership claim has been approved.',
+      title: 'Claim approved — Handover ready',
+      message: 'Your ownership claim for Sony Headphones was approved. Security PIN: 7842.',
       time: '2 hours ago',
       type: 'claim'
     },
     {
       id: 'notif-3',
-      title: 'New campus announcement',
-      message: 'Library maintenance scheduled.',
+      title: 'New found item cataloged',
+      message: 'Blue Hydro Flask Water Bottle you reported has been secured.',
+      time: '5 hours ago',
+      type: 'item'
+    },
+    {
+      id: 'notif-4',
+      title: 'Annual Campus Inventory Review',
+      message: 'Library maintenance scheduled and unclaimed items review active.',
       time: 'Yesterday',
       type: 'announcement'
     }
@@ -96,13 +143,29 @@ export const Dashboard = () => {
   const [recentClaims, setRecentClaims] = useState([
     {
       _id: 'claim-demo-1',
-      itemName: 'Black HP Laptop',
-      status: 'pending',
+      itemName: 'Sony WH-1000XM5 Wireless Headphones',
+      status: 'approved',
+      verificationStatus: 'approved',
+      createdAt: '2026-09-30T17:00:00.000Z'
+    },
+    {
+      _id: 'claim-demo-2',
+      itemName: 'Brown Leather Fossil Wallet',
+      status: 'under_review',
       verificationStatus: 'pending',
-      createdAt: '2026-09-28T10:00:00.000Z'
+      createdAt: '2026-10-01T09:30:00.000Z'
     }
   ]);
-  const [activeReturns, setActiveReturns] = useState([]);
+  const [activeReturns, setActiveReturns] = useState([
+    {
+      _id: 'return-demo-1',
+      itemName: 'Sony WH-1000XM5 Wireless Headphones',
+      status: 'scheduled',
+      scheduledDate: '2026-10-02T14:30:00.000Z',
+      location: 'Administration & Security Desk (Room G-04)',
+      verificationCode: '7842'
+    }
+  ]);
   const [recentNotifications, setRecentNotifications] = useState(defaultNotifications);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
@@ -118,10 +181,12 @@ export const Dashboard = () => {
         notificationService.getUnreadCount()
       ]);
 
+      const allUserItems = [];
       if (myLostRes.status === 'fulfilled' && myLostRes.value?.data) {
         const lData = myLostRes.value.data.data || myLostRes.value.data;
         if (Array.isArray(lData) && lData.length > 0) {
           setLostCount(lData.length);
+          allUserItems.push(...lData);
         }
       }
 
@@ -129,7 +194,12 @@ export const Dashboard = () => {
         const fData = myFoundRes.value.data.data || myFoundRes.value.data;
         if (Array.isArray(fData) && fData.length > 0) {
           setFoundCount(fData.length);
+          allUserItems.push(...fData);
         }
+      }
+
+      if (allUserItems.length > 0) {
+        setRecentItems(allUserItems.slice(0, 8));
       }
 
       if (myMatchesRes.status === 'fulfilled' && myMatchesRes.value?.data) {

@@ -232,8 +232,8 @@ export const handleMockRequest = async (config) => {
 
   if (path === 'lost-items/my' && method === 'get') {
     const lostItems = getStorage('lost_items', INITIAL_LOST_ITEMS);
-    const myItems = lostItems.filter((i) => i.reporter === currentUser._id || i.reporterName === currentUser.fullName);
-    return { success: true, data: myItems.length ? myItems : lostItems.slice(0, 3) };
+    const myItems = lostItems.filter((i) => i.reporter === currentUser._id || i.reporterName === currentUser.fullName || i.reporterName === 'Arjun Nair');
+    return { success: true, data: myItems.length ? myItems : lostItems.slice(0, 5) };
   }
 
   if (path.startsWith('lost-items/')) {
@@ -314,8 +314,8 @@ export const handleMockRequest = async (config) => {
 
   if (path === 'found-items/my' && method === 'get') {
     const foundItems = getStorage('found_items', INITIAL_FOUND_ITEMS);
-    const myItems = foundItems.filter((i) => i.finder === currentUser._id || i.finderName === currentUser.fullName);
-    return { success: true, data: myItems.length ? myItems : foundItems.slice(0, 2) };
+    const myItems = foundItems.filter((i) => i.finder === currentUser._id || i.finderName === currentUser.fullName || i.finderName === 'Arjun Nair');
+    return { success: true, data: myItems.length ? myItems : foundItems.slice(0, 4) };
   }
 
   if (path.startsWith('found-items/')) {
