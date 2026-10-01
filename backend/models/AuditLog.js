@@ -35,6 +35,18 @@ const AuditLogSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: {}
     },
+    actorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    targetType: {
+      type: String,
+      trim: true
+    },
+    targetId: {
+      type: String,
+      trim: true
+    },
     ipAddress: {
       type: String,
       default: null,
@@ -55,6 +67,17 @@ const AuditLogSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// Pre-validate hook for aliases
+AuditLogSchema.pre('validate', function (next) {
+  if (!this.actor && this.actorId) this.actor = this.actorId;
+  if (!this.actorId && this.actor) this.actorId = this.actor;
+  if (!this.entityType && this.targetType) this.entityType = this.targetType;
+  if (!this.targetType && this.entityType) this.targetType = this.entityType;
+  if (!this.entityId && this.targetId) this.entityId = this.targetId;
+  if (!this.targetId && this.entityId) this.targetId = this.entityId;
+  if (typeof next === 'function') next();
+});
 
 // High-speed audit query indexes
 AuditLogSchema.index({ action: 1, createdAt: -1 });

@@ -12,7 +12,30 @@ const logResult = (testName, passed, details = '') => {
   console.log(`${symbol} ${testName} ${details ? `(${details})` : ''}`);
 };
 
+const ensureServerReady = async () => {
+  for (let i = 0; i < 3; i++) {
+    try {
+      const res = await fetch(`${BASE_URL}/health`);
+      if (res.status === 200) return;
+    } catch (e) {}
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  try {
+    await import('./server.js');
+    for (let i = 0; i < 30; i++) {
+      try {
+        const res = await fetch(`${BASE_URL}/health`);
+        if (res.status === 200) return;
+      } catch (e) {}
+      await new Promise((r) => setTimeout(r, 300));
+    }
+  } catch (err) {
+    console.error('Failed to auto-start server for tests:', err);
+  }
+};
+
 const runTests = async () => {
+  await ensureServerReady();
   console.log('====================================================');
   console.log(' Starting Campus Lost & Found Phase 2 API Test Suite ');
   console.log('====================================================\n');
@@ -412,6 +435,40 @@ const runTests = async () => {
     logResult('GET /api/items/:id returns 404 for non-existent valid ObjectId', false, err.message);
   }
 
+  // Test 33: POST /api/contact validation of required fields
+  try {
+    const res = await fetch(`${BASE_URL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: '' })
+    });
+    const json = await res.json();
+    const passed = res.status === 400 && json.success === false;
+    logResult('POST /api/contact validation of required fields', passed, `Status: ${res.status}`);
+  } catch (err) {
+    logResult('POST /api/contact validation of required fields', false, err.message);
+  }
+
+  // Test 34: GET /api/announcements public list
+  try {
+    const res = await fetch(`${BASE_URL}/announcements`);
+    const json = await res.json();
+    const passed = res.status === 200 && json.success === true;
+    logResult('GET /api/announcements public endpoint access', passed, `Status: ${res.status}`);
+  } catch (err) {
+    logResult('GET /api/announcements public endpoint access', false, err.message);
+  }
+
+  // Test 35: GET /api/admin/analytics/overview authentication guard
+  try {
+    const res = await fetch(`${BASE_URL}/admin/analytics/overview`);
+    const json = await res.json();
+    const passed = res.status === 401 && json.success === false;
+    logResult('GET /api/admin/analytics/overview authentication guard', passed, `Status: ${res.status}`);
+  } catch (err) {
+    logResult('GET /api/admin/analytics/overview authentication guard', false, err.message);
+  }
+
   // Summary
   const passedCount = results.filter((r) => r.passed).length;
   const totalCount = results.length;
@@ -421,9 +478,10 @@ const runTests = async () => {
 
   if (passedCount === totalCount) {
     console.log('\nAll API security, validation, reporting, and routing tests passed successfully!');
+    process.exit(0);
   } else {
     console.error(`\n${totalCount - passedCount} test(s) failed.`);
-    process.exitCode = 1;
+    process.exit(1);
   }
 };
 

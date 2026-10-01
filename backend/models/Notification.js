@@ -89,6 +89,18 @@ const NotificationSchema = new mongoose.Schema(
      * Deduplication key prevents duplicate notifications for the same event.
      * Format: {type}:{entityId} or {type}:{entityId}:{subKey}
      */
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    relatedItemId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Item'
+    },
+    relatedClaimId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Claim'
+    },
     deduplicationKey: {
       type: String,
       trim: true,
@@ -102,6 +114,17 @@ const NotificationSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// Pre-validate hook for field sync
+NotificationSchema.pre('validate', function (next) {
+  if (!this.recipient && this.userId) this.recipient = this.userId;
+  if (!this.userId && this.recipient) this.userId = this.recipient;
+  if (!this.relatedItem && this.relatedItemId) this.relatedItem = this.relatedItemId;
+  if (!this.relatedItemId && this.relatedItem) this.relatedItemId = this.relatedItem;
+  if (!this.relatedClaim && this.relatedClaimId) this.relatedClaim = this.relatedClaimId;
+  if (!this.relatedClaimId && this.relatedClaim) this.relatedClaimId = this.relatedClaim;
+  if (typeof next === 'function') next();
+});
 
 // High-speed user notification query index
 NotificationSchema.index({ recipient: 1, isRead: 1, createdAt: -1 });

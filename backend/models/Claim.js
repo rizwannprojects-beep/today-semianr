@@ -3,17 +3,31 @@ import { ALL_CLAIM_STATUSES, CLAIM_STATUSES } from '../utils/constants.js';
 
 const ClaimSchema = new mongoose.Schema(
   {
+    claimId: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true
+    },
     item: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Item',
       required: [true, 'Found item reference is required'],
       index: true
     },
+    itemId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Item'
+    },
     claimant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Claimant reference is required'],
       index: true
+    },
+    claimantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     },
     claimType: {
       type: String,
@@ -32,11 +46,21 @@ const ClaimSchema = new mongoose.Schema(
       trim: true,
       maxlength: [2000, 'Reason cannot exceed 2000 characters']
     },
+    proofDescription: {
+      type: String,
+      trim: true,
+      maxlength: [3000, 'Proof description cannot exceed 3000 characters']
+    },
     ownershipProof: {
       type: String,
       required: [true, 'Proof of ownership details must be provided'],
       trim: true,
       maxlength: [3000, 'Ownership proof cannot exceed 3000 characters']
+    },
+    identifyingInformation: {
+      type: String,
+      trim: true,
+      maxlength: [3000, 'Identifying information cannot exceed 3000 characters']
     },
     additionalDetails: {
       type: String,
@@ -67,6 +91,12 @@ const ClaimSchema = new mongoose.Schema(
     reviewedAt: {
       type: Date,
       default: null
+    },
+    adminNotes: {
+      type: String,
+      trim: true,
+      default: null,
+      maxlength: [1000, 'Admin notes cannot exceed 1000 characters']
     },
     verificationNotes: {
       type: String,
@@ -114,6 +144,40 @@ const ClaimSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// Pre-validate hook for field sync and claimId auto-generation
+ClaimSchema.pre('validate', function (next) {
+  if (!this.item && this.itemId) this.item = this.itemId;
+  if (!this.itemId && this.item) this.itemId = this.item;
+  if (!this.claimant && this.claimantId) this.claimant = this.claimantId;
+  if (!this.claimantId && this.claimant) this.claimantId = this.claimant;
+
+  if (!this.ownershipProof && this.identifyingInformation) {
+    this.ownershipProof = this.identifyingInformation;
+  } else if (!this.identifyingInformation && this.ownershipProof) {
+    this.identifyingInformation = this.ownershipProof;
+  }
+
+  if (!this.reason && this.proofDescription) {
+    this.reason = this.proofDescription;
+  } else if (!this.proofDescription && this.reason) {
+    this.proofDescription = this.reason;
+  }
+
+  if (!this.verificationNotes && this.adminNotes) {
+    this.verificationNotes = this.adminNotes;
+  } else if (!this.adminNotes && this.verificationNotes) {
+    this.adminNotes = this.verificationNotes;
+  }
+
+  if (!this.claimId) {
+    const year = new Date().getFullYear();
+    const random = Math.floor(1000 + Math.random() * 9000);
+    this.claimId = `CLM-${year}-${random}`;
+  }
+
+  if (typeof next === 'function') next();
+});
 
 // Compound indexes for user query and claim verification lookups
 ClaimSchema.index({ item: 1, claimant: 1 });

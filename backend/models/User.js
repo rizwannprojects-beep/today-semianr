@@ -113,6 +113,22 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    name: {
+      type: String,
+      trim: true
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
+    lastLogin: {
+      type: Date,
+      default: null
+    },
     lastLoginAt: {
       type: Date,
       default: null
@@ -127,18 +143,43 @@ const UserSchema = new mongoose.Schema(
         delete ret.resetPasswordToken;
         delete ret.resetPasswordExpires;
         delete ret.__v;
+        if (!ret.name && ret.fullName) ret.name = ret.fullName;
+        if (!ret.fullName && ret.name) ret.fullName = ret.name;
+        if (ret.isVerified === undefined) ret.isVerified = ret.emailVerified;
+        if (ret.isActive === undefined) ret.isActive = ret.accountStatus === 'active';
+        if (!ret.lastLogin && ret.lastLoginAt) ret.lastLogin = ret.lastLoginAt;
         return ret;
       }
     }
   }
 );
 
-// Virtual property to sync phone and phoneNumber
+// Virtual property to sync fields
 UserSchema.pre('validate', function (next) {
+  if (this.name && !this.fullName) {
+    this.fullName = this.name;
+  } else if (this.fullName && !this.name) {
+    this.name = this.fullName;
+  }
   if (this.phone && !this.phoneNumber) {
     this.phoneNumber = this.phone;
   } else if (this.phoneNumber && !this.phone) {
     this.phone = this.phoneNumber;
+  }
+  if (this.isVerified !== undefined && this.emailVerified === undefined) {
+    this.emailVerified = this.isVerified;
+  } else if (this.emailVerified !== undefined && this.isVerified === undefined) {
+    this.isVerified = this.emailVerified;
+  }
+  if (this.isActive !== undefined) {
+    this.accountStatus = this.isActive ? ACCOUNT_STATUSES.ACTIVE : ACCOUNT_STATUSES.SUSPENDED;
+  } else if (this.accountStatus !== undefined) {
+    this.isActive = this.accountStatus === ACCOUNT_STATUSES.ACTIVE;
+  }
+  if (this.lastLogin && !this.lastLoginAt) {
+    this.lastLoginAt = this.lastLogin;
+  } else if (this.lastLoginAt && !this.lastLogin) {
+    this.lastLogin = this.lastLoginAt;
   }
   next();
 });

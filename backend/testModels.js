@@ -10,6 +10,7 @@ import AuditLog from './models/AuditLog.js';
 import Return from './models/Return.js';
 import ModerationReport from './models/ModerationReport.js';
 import Announcement from './models/Announcement.js';
+import ContactMessage from './models/ContactMessage.js';
 
 console.log('Testing Mongoose Models Initialization...');
 
@@ -24,7 +25,8 @@ const models = [
   { name: 'AuditLog', model: AuditLog },
   { name: 'Return', model: Return },
   { name: 'ModerationReport', model: ModerationReport },
-  { name: 'Announcement', model: Announcement }
+  { name: 'Announcement', model: Announcement },
+  { name: 'ContactMessage', model: ContactMessage }
 ];
 
 let allPassed = true;
@@ -176,8 +178,22 @@ try {
   allPassed = false;
 }
 
+// Test ContactMessage instantiation
+try {
+  const testContact = new ContactMessage({
+    name: 'Sample Student',
+    email: 'student@campus.edu',
+    subject: 'Lost card query',
+    message: 'Where can I collect my lost card?'
+  });
+  console.log(`[PASS] ContactMessage instance created successfully with status: ${testContact.status}`);
+} catch (err) {
+  console.error('[FAIL] ContactMessage instance creation failed:', err.message);
+  allPassed = false;
+}
+
 if (allPassed) {
-  console.log('\nAll 11 database models and schemas loaded and validated successfully!');
+  console.log('\nAll 12 database models and schemas loaded and validated successfully!');
 } else {
   console.error('\nOne or more model checks failed.');
   process.exitCode = 1;

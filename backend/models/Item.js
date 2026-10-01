@@ -13,6 +13,12 @@ import {
 
 const ItemSchema = new mongoose.Schema(
   {
+    itemCode: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true
+    },
     title: {
       type: String,
       trim: true,
@@ -160,6 +166,34 @@ const ItemSchema = new mongoose.Schema(
         message: 'Invalid contact preference'
       },
       default: CONTACT_PREFERENCES.IN_APP
+    },
+    reportedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
+    foundBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
+    serialNumber: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    securityQuestions: {
+      type: mongoose.Schema.Types.Mixed,
+      default: []
+    },
+    currentHolder: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null
+    },
+    holdingLocation: {
+      type: String,
+      trim: true,
+      default: ''
     }
   },
   {
@@ -205,6 +239,25 @@ ItemSchema.pre('validate', function (next) {
     this.identifyingFeatures = this.identifyingMarks;
   } else if (this.identifyingFeatures && !this.identifyingMarks) {
     this.identifyingMarks = this.identifyingFeatures;
+  }
+
+  // Generate unique itemCode if not provided
+  if (!this.itemCode) {
+    const year = new Date().getFullYear();
+    const random = Math.floor(1000 + Math.random() * 9000);
+    this.itemCode = `LF-${year}-${random}`;
+  }
+
+  // Synchronize reportedBy and holdingLocation aliases
+  if (!this.reportedBy && this.reporter) {
+    this.reportedBy = this.reporter;
+  } else if (!this.reporter && this.reportedBy) {
+    this.reporter = this.reportedBy;
+  }
+  if (!this.holdingLocation && this.storageLocation) {
+    this.holdingLocation = this.storageLocation;
+  } else if (!this.storageLocation && this.holdingLocation) {
+    this.storageLocation = this.holdingLocation;
   }
 
   next();

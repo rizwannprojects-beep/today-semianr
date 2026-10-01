@@ -8,11 +8,21 @@ import {
 
 const ReturnSchema = new mongoose.Schema(
   {
+    returnId: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true
+    },
     item: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Item',
       required: [true, 'Item reference is required'],
       index: true
+    },
+    itemId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Item'
     },
     claim: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,6 +35,10 @@ const ReturnSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Verified owner reference is required'],
       index: true
+    },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     },
     finder: {
       type: mongoose.Schema.Types.ObjectId,
@@ -50,6 +64,17 @@ const ReturnSchema = new mongoose.Schema(
       default: 'Administration & Security Desk',
       trim: true,
       maxlength: [200, 'Meeting location cannot exceed 200 characters']
+    },
+    handoverLocation: {
+      type: String,
+      trim: true,
+      maxlength: [200, 'Handover location cannot exceed 200 characters']
+    },
+    handoverCode: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true
     },
     scheduledDate: {
       type: Date,
@@ -151,6 +176,33 @@ const ReturnSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// Pre-validate hook for aliases and code generation
+ReturnSchema.pre('validate', function (next) {
+  if (!this.item && this.itemId) this.item = this.itemId;
+  if (!this.itemId && this.item) this.itemId = this.item;
+  if (!this.owner && this.ownerId) this.owner = this.ownerId;
+  if (!this.ownerId && this.owner) this.ownerId = this.owner;
+
+  if (!this.meetingLocation && this.handoverLocation) {
+    this.meetingLocation = this.handoverLocation;
+  } else if (!this.handoverLocation && this.meetingLocation) {
+    this.handoverLocation = this.meetingLocation;
+  }
+
+  if (!this.handoverCode) {
+    const code = Math.floor(100000 + Math.random() * 900000);
+    this.handoverCode = `RET-${code}`;
+  }
+
+  if (!this.returnId) {
+    const year = new Date().getFullYear();
+    const code = Math.floor(1000 + Math.random() * 9000);
+    this.returnId = `R-${year}-${code}`;
+  }
+
+  if (typeof next === 'function') next();
+});
 
 // Indexes for fast lookup
 ReturnSchema.index({ item: 1, claim: 1 }, { unique: true });

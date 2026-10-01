@@ -9,6 +9,7 @@ export { AuditLog } from './AuditLog.js';
 export { Return } from './Return.js';
 export { ModerationReport } from './ModerationReport.js';
 export { Announcement } from './Announcement.js';
+export { ContactMessage } from './ContactMessage.js';
 
 export default {
   User: (await import('./User.js')).User,
@@ -21,6 +22,6 @@ export default {
   AuditLog: (await import('./AuditLog.js')).AuditLog,
   Return: (await import('./Return.js')).Return,
   ModerationReport: (await import('./ModerationReport.js')).ModerationReport,
-  Announcement: (await import('./Announcement.js')).Announcement
+  Announcement: (await import('./Announcement.js')).Announcement,
+  ContactMessage: (await import('./ContactMessage.js')).ContactMessage
 };
-

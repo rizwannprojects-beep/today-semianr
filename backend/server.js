@@ -17,6 +17,7 @@ import matchRoutes from './routes/matchRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import returnRoutes from './routes/returnRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import { UPLOADS_DIR } from './utils/fileUpload.js';
 
 import { apiLimiter } from './middleware/rateLimitMiddleware.js';
@@ -114,6 +115,9 @@ const mountRouters = (prefix) => {
   app.use(`${prefix}/notifications`, notificationRoutes);
   app.use(`${prefix}/admin`, adminRoutes);
   app.use(`${prefix}/returns`, returnRoutes);
+  app.use(`${prefix}/contact`, contactRoutes);
+  app.use(`${prefix}/lost`, lostItemRoutes);
+  app.use(`${prefix}/found`, foundItemRoutes);
   app.post(`${prefix}/reports`, authenticate, createModerationReport);
   app.get(`${prefix}/announcements`, getAnnouncements);
   // Notification preferences routes

@@ -44,6 +44,7 @@ export const ITEM_CATEGORIES = Object.freeze([
   'Clothing',
   'Accessories',
   'Jewelry',
+  'Personal Items',
   'Other'
 ]);
 
@@ -55,7 +56,17 @@ export const LOST_ITEM_STATUSES = Object.freeze({
   CLOSED: 'CLOSED'
 });
 
-export const ALL_LOST_ITEM_STATUSES = Object.values(LOST_ITEM_STATUSES);
+export const ALL_LOST_ITEM_STATUSES = [
+  ...Object.values(LOST_ITEM_STATUSES),
+  'LOST',
+  'active',
+  'CLAIMED',
+  'VERIFICATION_PENDING',
+  'APPROVED',
+  'RETURNED',
+  'REJECTED',
+  'CLOSED'
+];
 
 export const FOUND_ITEM_STATUSES = Object.freeze({
   FOUND: 'FOUND',
@@ -66,7 +77,13 @@ export const FOUND_ITEM_STATUSES = Object.freeze({
   EXPIRED: 'EXPIRED'
 });
 
-export const ALL_FOUND_ITEM_STATUSES = Object.values(FOUND_ITEM_STATUSES);
+export const ALL_FOUND_ITEM_STATUSES = [
+  ...Object.values(FOUND_ITEM_STATUSES),
+  'VERIFICATION_PENDING',
+  'APPROVED',
+  'REJECTED',
+  'active'
+];
 
 export const ITEM_STATUSES = Object.freeze({
   ACTIVE: 'active',
@@ -89,10 +106,24 @@ export const ITEM_STATUSES = Object.freeze({
   STATUS_UNDER_VERIFICATION: 'UNDER_VERIFICATION',
   STATUS_CLAIMED: 'CLAIMED',
   STATUS_RETURNED: 'RETURNED',
-  STATUS_EXPIRED: 'EXPIRED'
+  STATUS_EXPIRED: 'EXPIRED',
+  STATUS_LOST: 'LOST',
+  STATUS_VERIFICATION_PENDING: 'VERIFICATION_PENDING',
+  STATUS_APPROVED: 'APPROVED',
+  STATUS_REJECTED: 'REJECTED'
 });
 
-export const ALL_ITEM_STATUSES = Object.values(ITEM_STATUSES);
+export const ALL_ITEM_STATUSES = [
+  ...Object.values(ITEM_STATUSES),
+  'LOST',
+  'FOUND',
+  'CLAIMED',
+  'VERIFICATION_PENDING',
+  'APPROVED',
+  'RETURNED',
+  'REJECTED',
+  'CLOSED'
+];
 
 export const CAMPUS_LOCATIONS = Object.freeze([
   'Central Library',
@@ -179,10 +210,19 @@ export const MATCH_STATUSES = Object.freeze({
   REJECTED: 'rejected',
   RESOLVED: 'resolved',
   NOTIFIED: 'notified',
-  CONFIRMED: 'confirmed'
+  CONFIRMED: 'confirmed',
+  // Uppercase constants
+  PENDING: 'PENDING',
+  REVIEWED: 'REVIEWED'
 });
 
-export const ALL_MATCH_STATUSES = Object.values(MATCH_STATUSES);
+export const ALL_MATCH_STATUSES = [
+  ...Object.values(MATCH_STATUSES),
+  'PENDING',
+  'REVIEWED',
+  'CONFIRMED',
+  'REJECTED'
+];
 
 export const RETURN_STATUSES = Object.freeze({
   READY_FOR_RETURN: 'READY_FOR_RETURN',
@@ -247,6 +287,7 @@ export const NOTIFICATION_TYPES = Object.freeze({
   // Match events
   NEW_POSSIBLE_MATCH: 'new_possible_match',
   ITEM_MATCH_FOUND: 'new_possible_match',
+  MATCH_FOUND: 'match_found',
   // Claim events
   CLAIM_SUBMITTED: 'claim_submitted',
   CLAIM_UNDER_REVIEW: 'claim_under_review',
@@ -259,6 +300,7 @@ export const NOTIFICATION_TYPES = Object.freeze({
   CLAIM_CANCELLED: 'claim_cancelled',
   // Return events
   ITEM_READY_FOR_RETURN: 'item_ready_for_return',
+  RETURN_READY: 'return_ready',
   RETURN_CREATED: 'return_created',
   RETURN_SCHEDULED: 'return_scheduled',
   RETURN_SCHEDULE_UPDATED: 'return_schedule_updated',
@@ -281,6 +323,7 @@ export const NOTIFICATION_TYPES = Object.freeze({
   // Admin/System events
   ADMIN_MESSAGE: 'admin_message',
   ANNOUNCEMENT: 'announcement',
+  SYSTEM_ALERT: 'system_alert',
   // Account/Security events
   ACCOUNT_STATUS_CHANGED: 'account_status_changed',
   SECURITY_ALERT: 'security_alert',
@@ -356,8 +399,37 @@ export const AUDIT_ACTIONS = Object.freeze({
   ITEM_RETURNED: 'item_returned',
   RETURN_CANCELLED: 'return_cancelled',
   RETURN_DISPUTED: 'return_disputed',
-  ADMIN_ACTION: 'admin_action'
+  ADMIN_ACTION: 'admin_action',
+  // Standard uppercase aliases
+  REGISTER: 'REGISTER',
+  CREATE_ITEM: 'CREATE_ITEM',
+  UPDATE_ITEM: 'UPDATE_ITEM',
+  SUBMIT_CLAIM: 'SUBMIT_CLAIM',
+  APPROVE_CLAIM: 'APPROVE_CLAIM',
+  REJECT_CLAIM: 'REJECT_CLAIM',
+  CREATE_MATCH: 'CREATE_MATCH',
+  CONFIRM_MATCH: 'CONFIRM_MATCH',
+  CREATE_RETURN: 'CREATE_RETURN',
+  COMPLETE_RETURN: 'COMPLETE_RETURN',
+  ROLE_CHANGE_UPPER: 'ROLE_CHANGE',
+  USER_DEACTIVATED: 'USER_DEACTIVATED'
 });
 
-export const ALL_AUDIT_ACTIONS = Object.values(AUDIT_ACTIONS);
+export const ALL_AUDIT_ACTIONS = [
+  ...Object.values(AUDIT_ACTIONS),
+  'LOGIN',
+  'REGISTER',
+  'CREATE_ITEM',
+  'UPDATE_ITEM',
+  'SUBMIT_CLAIM',
+  'APPROVE_CLAIM',
+  'REJECT_CLAIM',
+  'CREATE_MATCH',
+  'CONFIRM_MATCH',
+  'CREATE_RETURN',
+  'COMPLETE_RETURN',
+  'ADMIN_ACTION',
+  'ROLE_CHANGE',
+  'USER_DEACTIVATED'
+];
 

@@ -1,5 +1,15 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import environment from './environment.js';
+
+// Resolve DNS SRV queries reliably across all environments (including Windows local dev)
+try {
+  if (environment.mongoUri && environment.mongoUri.startsWith('mongodb+srv://')) {
+    dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+  }
+} catch (dnsErr) {
+  console.warn('[Database] Note: Could not set custom DNS servers:', dnsErr.message);
+}
 
 let isConnected = false;
 
@@ -14,7 +24,7 @@ export const connectDatabase = async () => {
 
   try {
     const conn = await mongoose.connect(environment.mongoUri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       autoIndex: environment.isDevelopment
     });
 
@@ -58,7 +68,7 @@ mongoose.connection.on('disconnected', () => {
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error(`[Database Error] MongoDB runtime error: ${err.message}`);
+  console.error('[Database Runtime Error]:', err.message);
 });
 
-export default connectDatabase;
+export default { connectDatabase, disconnectDatabase, getConnectionStatus };
