@@ -79,33 +79,33 @@ const HONOR_FINDERS = [
 export const HonorWall = () => {
   return (
     <div className="space-y-8">
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-[#16324F] via-[#1F4E79] to-[#004D40] rounded-3xl p-6 sm:p-10 text-white shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Banner (Unified Portal Light Theme) */}
+      <div className="bg-white border border-[#D9E2E8] rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#E0F2F1]/70 via-[#F0F7F6]/40 to-transparent rounded-full blur-2xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
-            <Trophy className="w-3.5 h-3.5 text-[#FFD54F]" />
-            Community Integrity &amp; Good Samaritans
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E0F2F1] border border-[#B2DFDB] text-xs font-bold uppercase tracking-wider text-[#00695C] shadow-2xs">
+            <Trophy className="w-3.5 h-3.5 text-[#00695C]" />
+            <span>Community Integrity &amp; Good Samaritans</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#16324F]">
             Campus Honor Wall &amp; Karma Leaderboard
           </h1>
-          <p className="text-sm sm:text-base text-[#ECEFF1] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#526579] leading-relaxed">
             Recognizing honest students and staff members who deposited found belongings at security custody desks and helped restore property to their rightful owners.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
-            <div className="bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 backdrop-blur-xs flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#FFD54F]" />
-              <span><strong>142+</strong> Belongings Reunited</span>
+          <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
+            <div className="bg-[#F7FAFC] px-3.5 py-2 rounded-xl border border-[#D9E2E8] flex items-center gap-2 text-[#16324F] font-medium shadow-2xs">
+              <Sparkles className="w-4 h-4 text-[#FF9800]" />
+              <span><strong className="text-[#16324F] font-bold">142+</strong> Belongings Reunited</span>
             </div>
-            <div className="bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 backdrop-blur-xs flex items-center gap-2">
-              <TrendingUp className="w-3.5 h-3.5 text-[#69F0AE]" />
-              <span><strong>₹4,80,000+</strong> Student Assets Protected</span>
+            <div className="bg-[#F7FAFC] px-3.5 py-2 rounded-xl border border-[#D9E2E8] flex items-center gap-2 text-[#16324F] font-medium shadow-2xs">
+              <TrendingUp className="w-4 h-4 text-[#2E7D32]" />
+              <span><strong className="text-[#16324F] font-bold">₹4,80,000+</strong> Student Assets Protected</span>
             </div>
-            <div className="bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 backdrop-blur-xs flex items-center gap-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#80CBC4]" />
-              <span><strong>96.4%</strong> Successful Recovery Rate</span>
+            <div className="bg-[#F7FAFC] px-3.5 py-2 rounded-xl border border-[#D9E2E8] flex items-center gap-2 text-[#16324F] font-medium shadow-2xs">
+              <ShieldCheck className="w-4 h-4 text-[#00695C]" />
+              <span><strong className="text-[#16324F] font-bold">96.4%</strong> Successful Recovery Rate</span>
             </div>
           </div>
         </div>

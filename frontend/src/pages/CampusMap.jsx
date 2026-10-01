@@ -180,33 +180,33 @@ export const CampusMap = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#00695C] via-[#00796B] to-[#004D40] rounded-3xl p-6 sm:p-10 text-white shadow-md relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Header Banner (Unified Portal Light Theme) */}
+      <div className="bg-white border border-[#D9E2E8] rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#E0F2F1]/70 via-[#F0F7F6]/40 to-transparent rounded-full blur-2xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
-            <Compass className="w-3.5 h-3.5 text-[#80CBC4]" />
-            Spatial Campus Intelligence
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E0F2F1] border border-[#B2DFDB] text-xs font-bold uppercase tracking-wider text-[#00695C] shadow-2xs">
+            <Compass className="w-3.5 h-3.5 text-[#00695C]" />
+            <span>Spatial Campus Intelligence</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#16324F]">
             Interactive Campus Map &amp; Loss Heatmap
           </h1>
-          <p className="text-sm sm:text-base text-[#E0F2F1] leading-relaxed font-normal">
+          <p className="text-sm sm:text-base text-[#526579] leading-relaxed">
             Visualize where items are frequently misplaced across campus facilities, track real-time holdings at custody desks, and browse incident reports by physical location.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
-            <div className="bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 backdrop-blur-xs flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FF5252] animate-pulse" />
-              <span><strong>{totalLostOnCampus}</strong> Active Lost Reports</span>
+          <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
+            <div className="bg-[#F7FAFC] px-3.5 py-2 rounded-xl border border-[#D9E2E8] flex items-center gap-2 text-[#16324F] font-medium shadow-2xs">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#D32F2F] animate-pulse" />
+              <span><strong className="text-[#16324F] font-bold">{totalLostOnCampus}</strong> Active Lost Reports</span>
             </div>
-            <div className="bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 backdrop-blur-xs flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#69F0AE]" />
-              <span><strong>{totalFoundOnCampus}</strong> Securely Held at Desks</span>
+            <div className="bg-[#F7FAFC] px-3.5 py-2 rounded-xl border border-[#D9E2E8] flex items-center gap-2 text-[#16324F] font-medium shadow-2xs">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2E7D32]" />
+              <span><strong className="text-[#16324F] font-bold">{totalFoundOnCampus}</strong> Securely Held at Desks</span>
             </div>
-            <div className="bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/15 backdrop-blur-xs flex items-center gap-2">
-              <Building2 className="w-3.5 h-3.5 text-[#80CBC4]" />
-              <span><strong>7</strong> Monitored Campus Zones</span>
+            <div className="bg-[#F7FAFC] px-3.5 py-2 rounded-xl border border-[#D9E2E8] flex items-center gap-2 text-[#16324F] font-medium shadow-2xs">
+              <Building2 className="w-3.5 h-3.5 text-[#00695C]" />
+              <span><strong className="text-[#16324F] font-bold">7</strong> Monitored Campus Zones</span>
             </div>
           </div>
         </div>
