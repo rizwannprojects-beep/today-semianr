@@ -32,9 +32,18 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.warn('Initial session validation failed:', err.message);
-      setUser(null);
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('accessToken');
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('accessToken');
+      }
     } finally {
       setLoading(false);
     }

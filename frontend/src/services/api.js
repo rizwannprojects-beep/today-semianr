@@ -55,6 +55,25 @@ api.interceptors.response.use(
       }
     }
 
+    // If on static hosting (like Vercel returning 405 Method Not Allowed on SPA rewrites),
+    // 404 on missing backend, or Network Error, provide instantaneous demo fallback
+    const isMockCandidate =
+      error.response?.status === 405 ||
+      error.response?.status === 404 ||
+      !error.response ||
+      error.code === 'ERR_NETWORK' ||
+      error.message?.includes('405');
+
+    if (isMockCandidate && originalRequest) {
+      try {
+        const { handleMockRequest } = await import('./mockApiHandler.js');
+        const mockResult = await handleMockRequest(originalRequest);
+        return mockResult;
+      } catch (mockErr) {
+        console.warn('Fallback mock handler failed:', mockErr);
+      }
+    }
+
     const customError = {
       message: error.response?.data?.message || error.message || 'An unexpected error occurred',
       statusCode: error.response?.status || 500,
