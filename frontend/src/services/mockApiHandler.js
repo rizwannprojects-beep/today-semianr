@@ -5,6 +5,7 @@ import {
   INITIAL_FOUND_ITEMS,
   INITIAL_CLAIMS,
   INITIAL_MATCHES,
+  INITIAL_RETURNS,
   INITIAL_NOTIFICATIONS,
   INITIAL_ANNOUNCEMENTS,
   INITIAL_ADMIN_USERS,
@@ -40,7 +41,6 @@ export const handleMockRequest = async (config) => {
   // 1. AUTH ROUTES
   if (path === 'auth/login' && method === 'post') {
     const email = (data.email || '').toLowerCase().trim();
-    const password = data.password || '';
 
     if (email === 'admin@campus.edu') {
       return {
@@ -49,7 +49,7 @@ export const handleMockRequest = async (config) => {
           user: DEMO_ADMIN,
           accessToken: `demo_admin_jwt_${Date.now()}`
         },
-        message: 'Signed in as Administrator'
+        message: 'Signed in as Campus Administrator'
       };
     }
 
@@ -78,15 +78,15 @@ export const handleMockRequest = async (config) => {
       };
     }
 
-    // Allow user to demo login with any credentials if needed
+    // Allow user to demo login with any credentials entered during recording
     const genericUser = {
       _id: `usr_${Date.now()}`,
       fullName: email.split('@')[0] || 'Campus Student',
       name: email.split('@')[0] || 'Campus Student',
       email,
       role: 'student',
-      department: 'General Studies',
-      registerNumber: 'REG-2026',
+      department: 'Computer Applications',
+      registerNumber: 'CS-2024-089',
       phone: '+91 98765 00000',
       accountStatus: 'active',
       emailVerified: true
@@ -108,11 +108,11 @@ export const handleMockRequest = async (config) => {
       name: data.name || data.fullName || 'New Student',
       email: (data.email || '').toLowerCase().trim(),
       role: 'student',
-      department: data.department || 'General Studies',
+      department: data.department || 'Computer Applications (BCA)',
       registerNumber: data.rollNumber || data.registerNumber || 'REG-2026',
       rollNumber: data.rollNumber || data.registerNumber || 'REG-2026',
       phone: data.phone || '+91 98765 00000',
-      year: data.year ? parseInt(data.year, 10) : 1,
+      year: data.year ? parseInt(data.year, 10) : 3,
       accountStatus: 'active',
       emailVerified: true,
       createdAt: new Date().toISOString()
@@ -127,7 +127,7 @@ export const handleMockRequest = async (config) => {
         user: newUser,
         accessToken: `demo_reg_jwt_${Date.now()}`
       },
-      message: 'Account created successfully'
+      message: 'Student account provisioned successfully'
     };
   }
 
@@ -156,7 +156,7 @@ export const handleMockRequest = async (config) => {
     return {
       success: true,
       data: { user: updated },
-      message: 'Profile updated successfully'
+      message: 'Student profile updated successfully'
     };
   }
 
@@ -174,6 +174,7 @@ export const handleMockRequest = async (config) => {
         filtered = filtered.filter(
           (item) =>
             item.itemName?.toLowerCase().includes(search) ||
+            item.title?.toLowerCase().includes(search) ||
             item.description?.toLowerCase().includes(search) ||
             item.brand?.toLowerCase().includes(search)
         );
@@ -205,8 +206,8 @@ export const handleMockRequest = async (config) => {
       const newItem = {
         _id: `lost-${Date.now()}`,
         id: `lost-${Date.now()}`,
-        itemName: data.itemName || 'Untitled Lost Item',
-        title: data.itemName || 'Untitled Lost Item',
+        itemName: data.itemName || data.title || 'Untitled Lost Item',
+        title: data.itemName || data.title || 'Untitled Lost Item',
         category: data.category || 'Other',
         description: data.description || '',
         location: data.lostLocation || data.location || 'Campus Ground',
@@ -225,14 +226,14 @@ export const handleMockRequest = async (config) => {
       };
       lostItems.unshift(newItem);
       setStorage('lost_items', lostItems);
-      return { success: true, data: newItem, message: 'Lost item reported successfully' };
+      return { success: true, data: newItem, message: 'Lost item reported and published to campus registry' };
     }
   }
 
   if (path === 'lost-items/my' && method === 'get') {
     const lostItems = getStorage('lost_items', INITIAL_LOST_ITEMS);
     const myItems = lostItems.filter((i) => i.reporter === currentUser._id || i.reporterName === currentUser.fullName);
-    return { success: true, data: myItems.length ? myItems : lostItems.slice(0, 2) };
+    return { success: true, data: myItems.length ? myItems : lostItems.slice(0, 3) };
   }
 
   if (path.startsWith('lost-items/')) {
@@ -256,6 +257,7 @@ export const handleMockRequest = async (config) => {
         filtered = filtered.filter(
           (item) =>
             item.itemName?.toLowerCase().includes(search) ||
+            item.title?.toLowerCase().includes(search) ||
             item.description?.toLowerCase().includes(search) ||
             item.brand?.toLowerCase().includes(search)
         );
@@ -287,12 +289,12 @@ export const handleMockRequest = async (config) => {
       const newItem = {
         _id: `found-${Date.now()}`,
         id: `found-${Date.now()}`,
-        itemName: data.itemName || 'Untitled Found Item',
-        title: data.itemName || 'Untitled Found Item',
+        itemName: data.itemName || data.title || 'Untitled Found Item',
+        title: data.itemName || data.title || 'Untitled Found Item',
         category: data.category || 'Other',
         description: data.description || '',
         location: data.location || 'Campus Ground',
-        storageLocation: data.storageLocation || 'Administration & Security Desk',
+        storageLocation: data.storageLocation || 'Administration & Security Desk (Holding)',
         dateFound: data.dateFound || new Date().toISOString(),
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         status: 'FOUND',
@@ -306,14 +308,14 @@ export const handleMockRequest = async (config) => {
       };
       foundItems.unshift(newItem);
       setStorage('found_items', foundItems);
-      return { success: true, data: newItem, message: 'Found item recorded successfully' };
+      return { success: true, data: newItem, message: 'Found item recorded and custody logged' };
     }
   }
 
   if (path === 'found-items/my' && method === 'get') {
     const foundItems = getStorage('found_items', INITIAL_FOUND_ITEMS);
     const myItems = foundItems.filter((i) => i.finder === currentUser._id || i.finderName === currentUser.fullName);
-    return { success: true, data: myItems.length ? myItems : foundItems.slice(0, 1) };
+    return { success: true, data: myItems.length ? myItems : foundItems.slice(0, 2) };
   }
 
   if (path.startsWith('found-items/')) {
@@ -323,7 +325,7 @@ export const handleMockRequest = async (config) => {
     return { success: true, data: found };
   }
 
-  // 5. GENERIC ITEMS
+  // 5. GENERIC ITEMS QUERY
   if (path === 'items' && method === 'get') {
     const lostItems = getStorage('lost_items', INITIAL_LOST_ITEMS);
     const foundItems = getStorage('found_items', INITIAL_FOUND_ITEMS);
@@ -338,7 +340,28 @@ export const handleMockRequest = async (config) => {
     };
   }
 
-  // 6. CLAIMS
+  if (path.startsWith('items/') && method === 'get') {
+    const id = path.replace('items/', '');
+    const lostItems = getStorage('lost_items', INITIAL_LOST_ITEMS);
+    const foundItems = getStorage('found_items', INITIAL_FOUND_ITEMS);
+    const all = [...lostItems, ...foundItems];
+    const item = all.find((i) => i._id === id || i.id === id) || all[0];
+    return { success: true, data: item };
+  }
+
+  // 6. UPLOADS (Returns instantaneous mock photo URL)
+  if (path === 'upload' && method === 'post') {
+    return {
+      success: true,
+      data: {
+        url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80'
+      },
+      message: 'Photo uploaded and securely stored'
+    };
+  }
+
+  // 7. CLAIMS
   if (path === 'claims' || path === 'claims/my') {
     const claims = getStorage('claims', INITIAL_CLAIMS);
 
@@ -347,11 +370,14 @@ export const handleMockRequest = async (config) => {
     }
 
     if (method === 'post') {
+      const foundItems = getStorage('found_items', INITIAL_FOUND_ITEMS);
+      const targetItem = foundItems.find((i) => i._id === data.itemId || i.id === data.itemId) || foundItems[0];
       const newClaim = {
         _id: `claim-${Date.now()}`,
         id: `claim-${Date.now()}`,
-        itemId: data.itemId,
-        itemName: data.itemName || 'Claimed Belonging',
+        itemId: targetItem._id,
+        item: targetItem,
+        itemName: targetItem.itemName || 'Claimed Belonging',
         claimant: currentUser,
         claimer: currentUser._id,
         claimerName: currentUser.fullName,
@@ -362,26 +388,96 @@ export const handleMockRequest = async (config) => {
       };
       claims.unshift(newClaim);
       setStorage('claims', claims);
-      return { success: true, data: newClaim, message: 'Claim submitted successfully' };
+      return { success: true, data: newClaim, message: 'Ownership claim submitted for administrative review' };
     }
   }
 
-  if (path.startsWith('claims/') && method === 'get') {
-    const id = path.replace('claims/', '');
+  if (path.startsWith('claims/')) {
+    const sub = path.replace('claims/', '');
     const claims = getStorage('claims', INITIAL_CLAIMS);
-    const claim = claims.find((c) => c._id === id || c.id === id) || claims[0];
-    return { success: true, data: claim };
+
+    if (sub.endsWith('/cancel') && method === 'post') {
+      const id = sub.replace('/cancel', '');
+      const updated = claims.map((c) => (c._id === id || c.id === id ? { ...c, status: 'cancelled' } : c));
+      setStorage('claims', updated);
+      return { success: true, message: 'Claim cancelled successfully' };
+    }
+
+    if (sub.endsWith('/approve') && method === 'post') {
+      const id = sub.replace('/approve', '');
+      const updated = claims.map((c) => (c._id === id || c.id === id ? { ...c, status: 'approved', verificationStatus: 'approved' } : c));
+      setStorage('claims', updated);
+      return { success: true, message: 'Claim approved. Handover ticket generated.' };
+    }
+
+    if (sub.endsWith('/reject') && method === 'post') {
+      const id = sub.replace('/reject', '');
+      const updated = claims.map((c) => (c._id === id || c.id === id ? { ...c, status: 'rejected' } : c));
+      setStorage('claims', updated);
+      return { success: true, message: 'Claim rejected.' };
+    }
+
+    if (method === 'get') {
+      const claim = claims.find((c) => c._id === sub || c.id === sub) || claims[0];
+      return { success: true, data: claim };
+    }
   }
 
-  // 7. MATCHES
+  // 8. SMART MATCH ENGINE
   if (path === 'matches' && method === 'get') {
     const matches = getStorage('matches', INITIAL_MATCHES);
     return { success: true, data: matches };
   }
 
-  // 8. NOTIFICATIONS & ANNOUNCEMENTS
+  if (path.startsWith('matches/')) {
+    const sub = path.replace('matches/', '');
+    const matches = getStorage('matches', INITIAL_MATCHES);
+
+    if (sub.endsWith('/dismiss') && method === 'post') {
+      const id = sub.replace('/dismiss', '');
+      const updated = matches.map((m) => (m._id === id || m.id === id ? { ...m, status: 'dismissed' } : m));
+      setStorage('matches', updated);
+      return { success: true, message: 'Match dismissed' };
+    }
+
+    if (sub.endsWith('/view') && method === 'post') {
+      return { success: true, message: 'Match marked as viewed' };
+    }
+
+    const match = matches.find((m) => m._id === sub || m.id === sub) || matches[0];
+    return { success: true, data: match };
+  }
+
+  // 9. PHYSICAL RETURN HANDOVERS
+  if (path === 'returns' && method === 'get') {
+    const returns = getStorage('returns', INITIAL_RETURNS);
+    return { success: true, data: returns };
+  }
+
+  if (path.startsWith('returns/')) {
+    const sub = path.replace('returns/', '');
+    const returns = getStorage('returns', INITIAL_RETURNS);
+
+    if (sub.endsWith('/confirm-received') && method === 'post') {
+      const id = sub.replace('/confirm-received', '');
+      const updated = returns.map((r) => (r._id === id || r.id === id ? { ...r, status: 'completed' } : r));
+      setStorage('returns', updated);
+      return { success: true, message: 'Receipt confirmed by student owner!' };
+    }
+
+    if (sub.endsWith('/schedule') && method === 'post') {
+      return { success: true, message: 'Handover appointment scheduled.' };
+    }
+
+    if (method === 'get') {
+      const ret = returns.find((r) => r._id === sub || r.id === sub) || returns[0];
+      return { success: true, data: ret };
+    }
+  }
+
+  // 10. NOTIFICATIONS & PREFERENCES
   if (path === 'notifications/unread-count') {
-    return { success: true, data: { unreadCount: 2 } };
+    return { success: true, data: { unreadCount: 3 } };
   }
 
   if (path === 'notifications' && method === 'get') {
@@ -389,11 +485,32 @@ export const handleMockRequest = async (config) => {
     return { success: true, data: notifs };
   }
 
+  if (path.startsWith('notifications/') && path.endsWith('/read') && method === 'patch') {
+    return { success: true, message: 'Notification marked as read' };
+  }
+
+  if (path === 'notifications/read-all' && method === 'patch') {
+    return { success: true, message: 'All notifications marked as read' };
+  }
+
+  if (path === 'notification-preferences') {
+    return {
+      success: true,
+      data: {
+        emailMatchAlerts: true,
+        emailClaimUpdates: true,
+        emailAnnouncements: true,
+        pushNotifications: true
+      }
+    };
+  }
+
+  // 11. ANNOUNCEMENTS
   if (path === 'announcements' || path === 'admin/announcements') {
     return { success: true, data: INITIAL_ANNOUNCEMENTS };
   }
 
-  // 9. ADMIN CONSOLE ROUTES
+  // 12. ADMIN CONSOLE ROUTES
   if (path === 'admin/dashboard') {
     return {
       success: true,
@@ -408,20 +525,26 @@ export const handleMockRequest = async (config) => {
           {
             _id: 'act-1',
             type: 'claim_approved',
-            description: 'Ownership claim for Sony WH-1000XM5 approved for Arjun Nair',
+            description: 'Ownership claim for Sony WH-1000XM5 approved for Arjun Nair (CS-2024-089)',
             timestamp: new Date(Date.now() - 15 * 60000).toISOString()
           },
           {
             _id: 'act-2',
             type: 'item_found',
-            description: 'New found item registered: Blue Hydro Flask Water Bottle',
+            description: 'New found item registered: Blue Hydro Flask Water Bottle (Science Block)',
             timestamp: new Date(Date.now() - 120 * 60000).toISOString()
           },
           {
             _id: 'act-3',
             type: 'item_lost',
-            description: 'New lost report submitted: Apple MacBook Air M2',
+            description: 'New lost report submitted: Apple MacBook Air M2 (Central Library)',
             timestamp: new Date(Date.now() - 360 * 60000).toISOString()
+          },
+          {
+            _id: 'act-4',
+            type: 'handover_completed',
+            description: 'Physical handover completed for AirPods Pro Case to Jordan Taylor',
+            timestamp: new Date(Date.now() - 1440 * 60000).toISOString()
           }
         ]
       }
@@ -436,6 +559,12 @@ export const handleMockRequest = async (config) => {
         meta: { totalPages: 1, totalUsers: INITIAL_ADMIN_USERS.length }
       }
     };
+  }
+
+  if (path.startsWith('admin/users/')) {
+    const id = path.replace('admin/users/', '').split('/')[0];
+    const user = INITIAL_ADMIN_USERS.find((u) => u._id === id) || INITIAL_ADMIN_USERS[0];
+    return { success: true, data: user, message: 'User status updated' };
   }
 
   if (path === 'admin/items' || path === 'admin/lost-items' || path === 'admin/found-items') {
@@ -462,7 +591,72 @@ export const handleMockRequest = async (config) => {
     };
   }
 
-  if (path === 'admin/analytics/overview') {
+  if (path === 'admin/matches') {
+    const matches = getStorage('matches', INITIAL_MATCHES);
+    return { success: true, data: matches };
+  }
+
+  if (path === 'admin/returns') {
+    const returns = getStorage('returns', INITIAL_RETURNS);
+    return { success: true, data: returns };
+  }
+
+  if (path === 'admin/disputes') {
+    return { success: true, data: [] };
+  }
+
+  if (path === 'admin/reports') {
+    return { success: true, data: [] };
+  }
+
+  if (path === 'admin/audit-logs') {
+    return {
+      success: true,
+      data: [
+        {
+          _id: 'log-1',
+          action: 'CLAIM_APPROVE',
+          user: 'admin@campus.edu',
+          details: 'Approved claim for item: Sony WH-1000XM5 (claim-demo-1)',
+          ip: '10.0.4.15',
+          timestamp: new Date(Date.now() - 30 * 60000).toISOString()
+        },
+        {
+          _id: 'log-2',
+          action: 'ITEM_STATUS_CHANGE',
+          user: 'admin@campus.edu',
+          details: 'Moved Found Item #found-item-1 to Locker 04',
+          ip: '10.0.4.15',
+          timestamp: new Date(Date.now() - 90 * 60000).toISOString()
+        },
+        {
+          _id: 'log-3',
+          action: 'USER_LOGIN',
+          user: 'arjun.nair@campus.edu',
+          details: 'Student session authenticated via 2FA token',
+          ip: '10.0.12.89',
+          timestamp: new Date(Date.now() - 180 * 60000).toISOString()
+        }
+      ]
+    };
+  }
+
+  if (path === 'admin/security-events') {
+    return {
+      success: true,
+      data: [
+        {
+          _id: 'sec-1',
+          eventType: 'FAILED_PIN_ATTEMPT',
+          severity: 'LOW',
+          details: 'Single incorrect PIN entered at Security Kiosk B — resolved.',
+          timestamp: new Date(Date.now() - 240 * 60000).toISOString()
+        }
+      ]
+    };
+  }
+
+  if (path.startsWith('admin/analytics/')) {
     return {
       success: true,
       data: {
@@ -470,6 +664,19 @@ export const handleMockRequest = async (config) => {
         recoveryRate: '78.5%',
         averageResolutionHours: 18.2,
         activeMatches: 14,
+        categories: [
+          { name: 'Electronics', count: 34 },
+          { name: 'Wallets & Bags', count: 22 },
+          { name: 'ID Cards & Keys', count: 18 },
+          { name: 'Accessories', count: 10 }
+        ],
+        locations: [
+          { name: 'Central Library', count: 28 },
+          { name: 'Academic Blocks', count: 24 },
+          { name: 'Cafeteria / SAC', count: 16 },
+          { name: 'Sports Complex', count: 10 },
+          { name: 'Auditorium', count: 6 }
+        ],
         monthlyTrends: [
           { month: 'May', count: 18 },
           { month: 'Jun', count: 24 },
@@ -485,6 +692,6 @@ export const handleMockRequest = async (config) => {
   return {
     success: true,
     data: {},
-    message: 'Operation handled via Presentation Demo Mode'
+    message: 'Processed successfully via Presentation Demo Mode'
   };
 };
