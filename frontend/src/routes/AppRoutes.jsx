@@ -62,6 +62,7 @@ export const AppRoutes = () => {
         <Route path="/item/:type/:id" element={<ItemDetails />} />
         <Route path="/items/:id" element={<ItemDetails />} />
         <Route path="/guidelines" element={<Guidelines />} />
+        <Route path="/how-it-works" element={<Guidelines />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

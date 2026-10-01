@@ -209,21 +209,35 @@ export const login = async (req, res, next) => {
     if (mongoose.connection.readyState !== 1) {
       let devUser = devUserMemoryMap.get(normalizedEmail);
       if (!devUser) {
-        const isPredefinedAdmin = normalizedEmail === 'admin@campus.edu' || normalizedEmail === 'system.admin@campus.edu';
-        const isPredefinedStudent = normalizedEmail === 'arjun.nair@campus.edu' ||
+        const isPredefinedAdmin =
+          normalizedEmail === 'admin@campus.demo' ||
+          normalizedEmail === 'admin@campus.edu' ||
+          normalizedEmail === 'system.admin@campus.edu';
+
+        const isArjun =
+          normalizedEmail === 'arjun.nair@campus.demo' ||
+          normalizedEmail === 'arjun.nair@campus.edu';
+
+        const isRahul = normalizedEmail === 'rahul.menon@campus.demo';
+        const isFathima = normalizedEmail === 'fathima.rahman@campus.demo';
+
+        const isPredefinedStudent =
+          isArjun ||
+          isRahul ||
+          isFathima ||
           normalizedEmail === 'student@campus.edu' ||
           normalizedEmail === 'alex.rivera@campus.edu' ||
           normalizedEmail === 'student@university.edu';
 
         if (isPredefinedAdmin) {
-          if (password !== 'Admin@123' && password !== 'AdminPassword123!') {
+          if (password !== 'Admin@12345' && password !== 'Admin@123' && password !== 'AdminPassword123!') {
             return invalidCredentialsResponse();
           }
           const devUserId = new mongoose.Types.ObjectId().toString();
           devUser = {
             _id: devUserId,
             id: devUserId,
-            fullName: 'Campus Administrator',
+            fullName: 'Campus Admin',
             email: normalizedEmail,
             role: ROLES.ADMIN,
             registerNumber: 'ADMIN-001',
@@ -238,6 +252,7 @@ export const login = async (req, res, next) => {
           devUserMemoryMap.set(devUserId, devUser);
         } else if (isPredefinedStudent) {
           if (
+            password !== 'Demo@12345' &&
             password !== 'Campus@123' &&
             password !== 'StudentPassword123!' &&
             password !== 'Student123!' &&
@@ -246,18 +261,32 @@ export const login = async (req, res, next) => {
             return invalidCredentialsResponse();
           }
           const devUserId = new mongoose.Types.ObjectId().toString();
+
+          let studentName = 'Arjun Nair';
+          let regNo = 'CS-2024-089';
+          let dept = 'Computer Applications';
+          let crs = 'BCA';
+
+          if (isRahul) {
+            studentName = 'Rahul Menon';
+            regNo = 'CS-2024-117';
+          } else if (isFathima) {
+            studentName = 'Fathima Rahman';
+            regNo = 'CS-2024-142';
+          }
+
           devUser = {
             _id: devUserId,
             id: devUserId,
-            fullName: normalizedEmail === 'arjun.nair@campus.edu' ? 'Arjun Nair' : 'Alex Rivera',
+            fullName: studentName,
             email: normalizedEmail,
             role: ROLES.STUDENT,
-            registerNumber: normalizedEmail === 'arjun.nair@campus.edu' ? 'BCA2024001' : 'CS2026-482',
-            department: normalizedEmail === 'arjun.nair@campus.edu' ? 'BCA' : 'Computer Science & Engineering',
-            course: normalizedEmail === 'arjun.nair@campus.edu' ? 'BCA Honours' : 'B.Tech',
+            registerNumber: regNo,
+            department: dept,
+            course: crs,
             year: 3,
             semester: 5,
-            phoneNumber: normalizedEmail === 'arjun.nair@campus.edu' ? '9876543210' : '+1 (555) 839-2041',
+            phoneNumber: '+91 98765 43210',
             accountStatus: ACCOUNT_STATUSES.ACTIVE,
             passwordHash: password
           };

@@ -1,5 +1,7 @@
 import {
   DEMO_STUDENT,
+  DEMO_FINDER,
+  DEMO_STUDENT_3,
   DEMO_ADMIN,
   INITIAL_LOST_ITEMS,
   INITIAL_FOUND_ITEMS,
@@ -42,7 +44,7 @@ export const handleMockRequest = async (config) => {
   if (path === 'auth/login' && method === 'post') {
     const email = (data.email || '').toLowerCase().trim();
 
-    if (email === 'admin@campus.edu') {
+    if (email === 'admin@campus.demo' || email === 'admin@campus.edu') {
       return {
         success: true,
         data: {
@@ -53,14 +55,36 @@ export const handleMockRequest = async (config) => {
       };
     }
 
-    if (email === 'arjun.nair@campus.edu' || email.includes('arjun')) {
+    if (email === 'rahul.menon@campus.demo' || email.includes('rahul')) {
+      return {
+        success: true,
+        data: {
+          user: DEMO_FINDER,
+          accessToken: `demo_finder_jwt_${Date.now()}`
+        },
+        message: 'Signed in as Rahul Menon (Finder)'
+      };
+    }
+
+    if (email === 'fathima.rahman@campus.demo' || email.includes('fathima')) {
+      return {
+        success: true,
+        data: {
+          user: DEMO_STUDENT_3,
+          accessToken: `demo_student3_jwt_${Date.now()}`
+        },
+        message: 'Signed in as Fathima Rahman'
+      };
+    }
+
+    if (email === 'arjun.nair@campus.demo' || email === 'arjun.nair@campus.edu' || email.includes('arjun')) {
       return {
         success: true,
         data: {
           user: DEMO_STUDENT,
           accessToken: `demo_student_jwt_${Date.now()}`
         },
-        message: 'Signed in as Arjun Nair'
+        message: 'Signed in as Arjun Nair (Owner)'
       };
     }
 
@@ -458,11 +482,47 @@ export const handleMockRequest = async (config) => {
     const sub = path.replace('returns/', '');
     const returns = getStorage('returns', INITIAL_RETURNS);
 
-    if (sub.endsWith('/confirm-received') && method === 'post') {
-      const id = sub.replace('/confirm-received', '');
-      const updated = returns.map((r) => (r._id === id || r.id === id ? { ...r, status: 'completed' } : r));
+    if ((sub.endsWith('/confirm-received') || sub.endsWith('/handover')) && method === 'post') {
+      const id = sub.replace('/confirm-received', '').replace('/handover', '');
+      const returnedDate = new Date().toISOString();
+      const updated = returns.map((r) =>
+        r._id === id || r.id === id
+          ? {
+              ...r,
+              status: 'RETURNED',
+              handoverStatus: 'RETURNED',
+              returnedAt: returnedDate,
+              completedAt: returnedDate
+            }
+          : r
+      );
       setStorage('returns', updated);
-      return { success: true, message: 'Receipt confirmed by student owner!' };
+
+      // Update lost item status to RETURNED as well
+      const lostItems = getStorage('lost_items', INITIAL_LOST_ITEMS);
+      const updatedLost = lostItems.map((item) =>
+        item.itemName === 'Black HP Laptop' || item._id === 'lost-item-1'
+          ? { ...item, status: 'RETURNED' }
+          : item
+      );
+      setStorage('lost_items', updatedLost);
+
+      return {
+        success: true,
+        data: updated.find((r) => r._id === id || r.id === id),
+        message: 'Item returned successfully! Physical handover recorded on security ledger.'
+      };
+    }
+
+    if (sub.endsWith('/verify') && method === 'post') {
+      const id = sub.replace('/verify', '');
+      const updated = returns.map((r) =>
+        r._id === id || r.id === id
+          ? { ...r, verificationStatus: 'VERIFIED', isCodeVerified: true }
+          : r
+      );
+      setStorage('returns', updated);
+      return { success: true, message: 'Owner verification code validated successfully.' };
     }
 
     if (sub.endsWith('/schedule') && method === 'post') {

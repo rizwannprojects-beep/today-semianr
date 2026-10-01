@@ -90,17 +90,31 @@ export const Login = () => {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setFormData({ email: 'arjun.nair@campus.edu', password: 'Campus@123', rememberMe: false })}
+                onClick={() => setFormData({ email: 'arjun.nair@campus.demo', password: 'Demo@12345', rememberMe: false })}
                 className="px-2.5 py-1.5 rounded-lg bg-white border border-[#00695C]/30 text-[#00695C] text-xs font-bold hover:bg-[#F0F7F6] text-left transition-all cursor-pointer shadow-2xs"
               >
-                🎓 Student: Arjun Nair
+                🎓 Owner: Arjun Nair
               </button>
               <button
                 type="button"
-                onClick={() => setFormData({ email: 'admin@campus.edu', password: 'Admin@123', rememberMe: false })}
+                onClick={() => setFormData({ email: 'rahul.menon@campus.demo', password: 'Demo@12345', rememberMe: false })}
+                className="px-2.5 py-1.5 rounded-lg bg-white border border-[#00695C]/30 text-[#00695C] text-xs font-bold hover:bg-[#F0F7F6] text-left transition-all cursor-pointer shadow-2xs"
+              >
+                🔍 Finder: Rahul Menon
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ email: 'fathima.rahman@campus.demo', password: 'Demo@12345', rememberMe: false })}
+                className="px-2.5 py-1.5 rounded-lg bg-white border border-[#00897B]/40 text-[#00695C] text-xs font-bold hover:bg-[#E0F2F1] text-left transition-all cursor-pointer shadow-2xs"
+              >
+                👩‍🎓 Student: Fathima
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ email: 'admin@campus.demo', password: 'Admin@12345', rememberMe: false })}
                 className="px-2.5 py-1.5 rounded-lg bg-white border border-[#FF9800]/40 text-[#D84315] text-xs font-bold hover:bg-[#FFF3E0] text-left transition-all cursor-pointer shadow-2xs"
               >
-                🛡️ Admin: Authority
+                🛡️ Campus Admin
               </button>
             </div>
           </div>

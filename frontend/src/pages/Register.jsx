@@ -48,16 +48,16 @@ export const Register = () => {
   const handleFillDemo = () => {
     setFormData({
       name: 'Arjun Nair',
-      email: 'arjun.nair@campus.edu',
-      password: 'Campus@123',
-      confirmPassword: 'Campus@123',
-      phone: '9876543210',
-      registerNumber: 'BCA2024001',
-      department: 'BCA',
-      course: 'BCA Honours',
+      email: 'arjun.nair@campus.demo',
+      password: 'Demo@12345',
+      confirmPassword: 'Demo@12345',
+      phone: '+91 98765 43210',
+      registerNumber: 'CS-2024-089',
+      department: 'Computer Applications',
+      course: 'BCA',
       year: '3',
       semester: '5',
-      classDivision: 'BCA-A'
+      classDivision: 'BCA-3A'
     });
     setError(null);
   };
