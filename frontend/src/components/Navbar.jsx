@@ -91,6 +91,12 @@ export const Navbar = () => {
             <NavLink to="/guidelines" className={navLinkClass}>
               How It Works
             </NavLink>
+            <NavLink to="/campus-map" className={navLinkClass}>
+              Campus Map
+            </NavLink>
+            <NavLink to="/honor-wall" className={navLinkClass}>
+              Honor Wall
+            </NavLink>
             <NavLink to="/contact" className={navLinkClass}>
               Contact Desk
             </NavLink>
@@ -251,6 +257,20 @@ export const Navbar = () => {
               className="block px-3 py-2 rounded-lg text-sm font-semibold text-[#16324F] hover:bg-[#F0F7F6]"
             >
               How It Works
+            </NavLink>
+            <NavLink
+              to="/campus-map"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-lg text-sm font-semibold text-[#16324F] hover:bg-[#F0F7F6]"
+            >
+              Campus Map &amp; Heatmap
+            </NavLink>
+            <NavLink
+              to="/honor-wall"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-lg text-sm font-semibold text-[#16324F] hover:bg-[#F0F7F6]"
+            >
+              Honor Wall &amp; Karma
             </NavLink>
             <NavLink
               to="/contact"

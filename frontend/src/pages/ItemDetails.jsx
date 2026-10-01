@@ -9,7 +9,10 @@ import {
   CheckCircle2,
   FileCheck,
   Sparkles,
-  Camera
+  Camera,
+  Printer,
+  X,
+  QrCode
 } from 'lucide-react';
 import itemService from '../services/itemService.js';
 import { INITIAL_LOST_ITEMS, INITIAL_FOUND_ITEMS } from '../services/mockData.js';
@@ -43,6 +46,9 @@ export const ItemDetails = () => {
   const [matchSubmitting, setMatchSubmitting] = useState(false);
   const [matchSuccess, setMatchSuccess] = useState(false);
   const [matchError, setMatchError] = useState(null);
+
+  // Printable Notice Poster Modal State
+  const [showPrintPosterModal, setShowPrintPosterModal] = useState(false);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -446,6 +452,16 @@ export const ItemDetails = () => {
                 </Button>
               )}
 
+              <Button
+                variant="outline"
+                size="lg"
+                icon={Printer}
+                onClick={() => setShowPrintPosterModal(true)}
+                className="w-full sm:w-auto"
+              >
+                Print Notice Poster
+              </Button>
+
               <Link to={isFound ? '/browse-found' : '/browse-lost'} className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full">
                   Browse More Items
@@ -619,6 +635,189 @@ export const ItemDetails = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Printable Official Lost Notice Bulletin Modal */}
+      {showPrintPosterModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-[#16324F]/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #printable-campus-notice, #printable-campus-notice * {
+                visibility: visible !important;
+              }
+              #printable-campus-notice {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 24px !important;
+                background: white !important;
+                border: 3px solid #16324F !important;
+                box-shadow: none !important;
+              }
+              .no-print {
+                display: none !important;
+              }
+            }
+          `}</style>
+
+          <div className="bg-white border border-[#D9E2E8] rounded-2xl max-w-2xl w-full p-6 space-y-6 shadow-2xl relative my-8">
+            {/* Modal Controls (Not printed) */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#D9E2E8] no-print">
+              <div className="flex items-center gap-2 text-[#00695C]">
+                <Printer className="w-5 h-5" />
+                <h3 className="font-bold text-[#16324F] text-base">Campus Bulletin Notice Preview</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  icon={Printer}
+                  onClick={() => window.print()}
+                >
+                  Print / Save PDF
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => setShowPrintPosterModal(false)}
+                  className="p-1.5 text-[#718096] hover:text-[#16324F] rounded-lg cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Bulletin Document Container */}
+            <div
+              id="printable-campus-notice"
+              className="bg-white border-4 border-[#16324F] p-6 sm:p-8 rounded-xl text-[#16324F] space-y-5"
+            >
+              {/* Header with University Seal Title */}
+              <div className="text-center border-b-2 border-[#16324F] pb-4 space-y-1">
+                <div className="flex items-center justify-center gap-2 text-[#00695C] font-extrabold uppercase tracking-widest text-xs">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Campus Security & Lost Property Directorate</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#16324F]">
+                  {isFound ? '★ FOUND PROPERTY BULLETIN ★' : '★ OFFICIAL LOST ITEM NOTICE ★'}
+                </h1>
+                <p className="text-xs font-semibold text-[#526579] tracking-wider">
+                  CASE TRACKING CODE: LF-{item._id?.slice(-8).toUpperCase() || 'OFFICIAL'} • DATE POSTED: {new Date().toLocaleDateString()}
+                </p>
+              </div>
+
+              {/* Main Content: Big Photo & Essential Specs */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
+                <div className="sm:col-span-5">
+                  <div className="aspect-square w-full rounded-xl overflow-hidden border-2 border-[#16324F] bg-[#F7FAFC]">
+                    {images[0] ? (
+                      <img
+                        src={images[0]}
+                        alt={itemName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4 text-[#718096]">
+                        <Camera className="w-10 h-10 mb-1 opacity-50" />
+                        <span className="text-xs font-bold uppercase">Photo Recorded in Registry</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 text-center text-[10px] font-bold text-[#526579] uppercase">
+                    Verified Digital Registry Photo
+                  </div>
+                </div>
+
+                <div className="sm:col-span-7 space-y-3">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#526579] block">Item Name</span>
+                    <h2 className="text-xl font-black text-[#16324F] leading-tight">{itemName}</h2>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2 bg-[#F0F7F6] border border-[#00695C]/20 rounded-lg">
+                      <span className="text-[10px] text-[#526579] font-bold block uppercase">Category</span>
+                      <span className="font-bold text-[#16324F]">{item.category}</span>
+                    </div>
+                    <div className="p-2 bg-[#F0F7F6] border border-[#00695C]/20 rounded-lg">
+                      <span className="text-[10px] text-[#526579] font-bold block uppercase">Color / Brand</span>
+                      <span className="font-bold text-[#16324F]">{item.color || 'Standard'} {item.brand ? `(${item.brand})` : ''}</span>
+                    </div>
+                    <div className="p-2 bg-[#F0F7F6] border border-[#00695C]/20 rounded-lg">
+                      <span className="text-[10px] text-[#526579] font-bold block uppercase">{isFound ? 'Found At' : 'Lost At'}</span>
+                      <span className="font-bold text-[#16324F]">{itemLocation}</span>
+                    </div>
+                    <div className="p-2 bg-[#F0F7F6] border border-[#00695C]/20 rounded-lg">
+                      <span className="text-[10px] text-[#526579] font-bold block uppercase">Date Recorded</span>
+                      <span className="font-bold text-[#16324F]">{new Date(itemDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  {item.description && (
+                    <div className="text-xs">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#526579] block">Description & Particulars</span>
+                      <p className="font-medium text-[#16324F] leading-relaxed mt-0.5 line-clamp-3">
+                        {item.description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Instructions & Direct QR Scan */}
+              <div className="p-4 bg-[#F7FAFC] border-2 border-dashed border-[#16324F] rounded-xl flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h3 className="font-black text-sm uppercase text-[#16324F]">
+                    {isFound ? 'How to Claim This Item:' : 'Have you seen this item or found it?'}
+                  </h3>
+                  <p className="text-xs text-[#526579] leading-relaxed">
+                    Scan the QR code with your smartphone or report to <strong>Campus Security Desk (Admin Wing Ground Floor)</strong> with valid Student ID. Ref Code: <code>LF-{item._id?.slice(-8).toUpperCase()}</code>
+                  </p>
+                </div>
+                <div className="shrink-0 p-1.5 bg-white border border-[#D9E2E8] rounded-xl text-center">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
+                      window.location.href
+                    )}`}
+                    alt="Scan Item"
+                    className="w-18 h-18 mx-auto"
+                  />
+                  <span className="text-[8px] font-black uppercase text-[#00695C] block mt-0.5">Scan Registry</span>
+                </div>
+              </div>
+
+              {/* Classic Perforated Tear-off Strips */}
+              <div className="pt-2 border-t-2 border-dashed border-[#16324F]">
+                <div className="text-[9px] font-bold uppercase tracking-widest text-[#718096] text-center mb-2">
+                  ✂ Tear-off reference slips for campus notice boards ✂
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  {[1, 2, 3, 4].map((num) => (
+                    <div
+                      key={num}
+                      className="border-l-2 border-r-2 border-b-2 border-dashed border-[#16324F] p-2 bg-[#FAFCFD] rounded-b-md space-y-0.5"
+                    >
+                      <div className="text-[9px] font-black text-[#16324F] truncate uppercase">
+                        {itemName}
+                      </div>
+                      <div className="text-[8px] font-mono font-bold text-[#00695C]">
+                        LF-{item._id?.slice(-8).toUpperCase()}
+                      </div>
+                      <div className="text-[8px] text-[#526579] font-semibold">
+                        Sec: Ext 4102
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

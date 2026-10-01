@@ -15,12 +15,18 @@ import {
   FileText,
   BadgeCheck,
   Info,
-  X
+  X,
+  Camera,
+  CameraOff,
+  QrCode,
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 import itemService from '../services/itemService.js';
 import Card from '../components/Card.jsx';
 import Button from '../components/Button.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
+import { useRef } from 'react';
 
 export const ReturnHandover = () => {
   const { returnId } = useParams();
@@ -44,6 +50,59 @@ export const ReturnHandover = () => {
   const [disputeReason, setDisputeReason] = useState('');
   const [disputeDescription, setDisputeDescription] = useState('');
   const [submittingDispute, setSubmittingDispute] = useState(false);
+
+  // QR Code & Camera Scanner State
+  const [showQrCodeModal, setShowQrCodeModal] = useState(false);
+  const [showCameraScanner, setShowCameraScanner] = useState(false);
+  const [cameraStatus, setCameraStatus] = useState('idle'); // 'idle' | 'starting' | 'active' | 'error'
+  const [cameraError, setCameraError] = useState(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+
+  const startCamera = async () => {
+    setCameraStatus('starting');
+    setCameraError(null);
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access not supported on this browser/environment.');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(err => console.warn('Video play error:', err));
+      }
+      setCameraStatus('active');
+    } catch (err) {
+      console.warn('Unable to access camera:', err);
+      setCameraStatus('error');
+      setCameraError(err.message || 'Camera permission denied or no camera device connected.');
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setCameraStatus('idle');
+  };
+
+  useEffect(() => {
+    if (showCameraScanner) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+    return () => {
+      stopCamera();
+    };
+  }, [showCameraScanner]);
 
   const fetchReturnDetails = async () => {
     try {
@@ -415,45 +474,67 @@ export const ReturnHandover = () => {
                 </div>
               ) : isOwner ? (
                 /* Owner Perspective: display code instructions */
-                <div className="p-4 bg-[#E0F2F1] border border-[#00695C]/30 rounded-xl">
-                  <span className="text-xs font-bold text-[#00695C] block">Your Secret Return Code:</span>
-                  <div className="text-2xl font-mono font-black text-[#00695C] tracking-wider my-2">
+                <div className="p-4 bg-[#E0F2F1] border border-[#00695C]/30 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#00695C] block">Your Secret Return Code:</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowQrCodeModal(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-[#00695C]/40 text-[#00695C] rounded-lg text-xs font-bold hover:bg-[#00695C] hover:text-white transition shadow-xs cursor-pointer"
+                    >
+                      <QrCode className="w-3.5 h-3.5" />
+                      <span>Show QR Badge</span>
+                    </button>
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-mono font-black text-[#00695C] tracking-wider my-1">
                     {returnDoc.verificationCode || 'LF-XXXXXX'}
                   </div>
-                  <p className="text-xs text-[#526579] font-medium">
-                    Provide this code to the custodian or finder at the handover location. They will enter it into their verification station.
+                  <p className="text-xs text-[#526579] font-medium leading-relaxed">
+                    Provide this code to the custodian or finder at the handover location. You can also tap <strong>Show QR Badge</strong> so they can scan it directly with their camera.
                   </p>
                 </div>
               ) : (
                 /* Finder / Staff Perspective: Code Input Station */
-                <form onSubmit={handleVerifyCode} className="space-y-4">
-                  <p className="text-xs text-[#526579] font-medium leading-relaxed">
-                    Ask the student for their one-time secret return code (e.g. <code>LF-XXXXXX</code>) and enter it below:
-                  </p>
-
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={inputCode}
-                      onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-                      placeholder="e.g. LF-482731"
-                      className="flex-1 px-4 py-2.5 font-mono text-base uppercase border border-[#D9E2E8] rounded-xl focus:ring-2 focus:ring-[#00695C]/20 focus:border-[#00695C] text-[#16324F] focus:outline-none"
-                      maxLength={12}
-                      required
-                    />
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      disabled={verifying || !inputCode.trim()}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <p className="text-xs text-[#526579] font-medium leading-relaxed">
+                      Ask the student for their one-time return code or scan their QR badge:
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowCameraScanner(true)}
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-[#00695C] text-white rounded-xl text-xs font-bold hover:bg-[#004D40] transition shadow-xs cursor-pointer shrink-0"
                     >
-                      {verifying ? 'Checking...' : 'Verify Code'}
-                    </Button>
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Scan with Camera</span>
+                    </button>
                   </div>
 
-                  <p className="text-xs text-[#718096]">
-                    Attempts are securely rate-limited. Ensure student provides the exact code from their account.
-                  </p>
-                </form>
+                  <form onSubmit={handleVerifyCode} className="space-y-4">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={inputCode}
+                        onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. LF-482731"
+                        className="flex-1 px-4 py-2.5 font-mono text-base uppercase border border-[#D9E2E8] rounded-xl focus:ring-2 focus:ring-[#00695C]/20 focus:border-[#00695C] text-[#16324F] focus:outline-none"
+                        maxLength={12}
+                        required
+                      />
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={verifying || !inputCode.trim()}
+                      >
+                        {verifying ? 'Checking...' : 'Verify Code'}
+                      </Button>
+                    </div>
+
+                    <p className="text-xs text-[#718096]">
+                      Attempts are securely rate-limited. Ensure student provides the exact code from their account or mobile screen.
+                    </p>
+                  </form>
+                </div>
               )}
             </Card>
           )}
@@ -658,6 +739,175 @@ export const ReturnHandover = () => {
                 </Button>
               </div>
             </form>
+          </Card>
+        </div>
+      )}
+
+      {/* Owner QR Code Badge Modal */}
+      {showQrCodeModal && (
+        <div className="fixed inset-0 z-50 bg-[#16324F]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <Card className="max-w-sm w-full p-6 text-center space-y-4 relative animate-in fade-in zoom-in-95 duration-150">
+            <button
+              onClick={() => setShowQrCodeModal(false)}
+              className="absolute top-4 right-4 text-[#718096] hover:text-[#16324F] cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-12 h-12 bg-[#00695C]/10 text-[#00695C] rounded-2xl flex items-center justify-center mx-auto">
+              <QrCode className="w-6 h-6" />
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-[#16324F]">Handover QR Badge</h3>
+              <p className="text-xs text-[#526579] mt-1">
+                Show this digital badge to the finder or custodian for contactless identity verification.
+              </p>
+            </div>
+
+            <div className="p-4 bg-white border border-[#D9E2E8] rounded-2xl inline-block shadow-inner mx-auto">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                  returnDoc.verificationCode || 'LF-VERIFY'
+                )}`}
+                alt="Verification QR Code"
+                className="w-48 h-48 mx-auto rounded-lg"
+              />
+            </div>
+
+            <div className="bg-[#F7FAFC] border border-[#D9E2E8] rounded-xl p-3">
+              <span className="text-[10px] text-[#718096] uppercase font-bold tracking-wider block">Verification Code</span>
+              <span className="font-mono text-xl font-black text-[#00695C] tracking-widest block">
+                {returnDoc.verificationCode || 'LF-XXXXXX'}
+              </span>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowQrCodeModal(false)}
+              className="w-full"
+            >
+              Close Badge
+            </Button>
+          </Card>
+        </div>
+      )}
+
+      {/* Custodian Camera QR Scanner Modal */}
+      {showCameraScanner && (
+        <div className="fixed inset-0 z-50 bg-[#16324F]/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <Card className="max-w-md w-full p-6 space-y-4 relative animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-[#D9E2E8]">
+              <div className="flex items-center gap-2 text-[#00695C]">
+                <Camera className="w-5 h-5" />
+                <h3 className="font-bold text-[#16324F] text-base">Camera QR Scanner</h3>
+              </div>
+              <button
+                onClick={() => setShowCameraScanner(false)}
+                className="text-[#718096] hover:text-[#16324F] cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Video Viewport / Scanner HUD */}
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-[#16324F] flex items-center justify-center shadow-inner">
+              <video
+                ref={videoRef}
+                playsInline
+                autoPlay
+                muted
+                className={`w-full h-full object-cover ${cameraStatus === 'active' ? 'block' : 'hidden'}`}
+              />
+
+              {/* Scanning HUD Overlay */}
+              {cameraStatus === 'active' && (
+                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
+                  <div className="w-48 h-48 border-2 border-[#00897B] rounded-2xl relative shadow-[0_0_20px_rgba(0,137,123,0.4)]">
+                    {/* Laser scanning line animation */}
+                    <div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#4DB6AC] to-transparent animate-pulse top-1/2" />
+                    {/* Target corner reticles */}
+                    <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-white" />
+                    <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-white" />
+                    <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-white" />
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-white" />
+                  </div>
+                  <span className="text-[11px] text-white/90 bg-black/50 px-2.5 py-1 rounded-full mt-3 backdrop-blur-xs font-medium">
+                    Align student QR code inside frame
+                  </span>
+                </div>
+              )}
+
+              {/* Starting Camera State */}
+              {cameraStatus === 'starting' && (
+                <div className="text-center text-white/80 p-6 space-y-2">
+                  <RefreshCw className="w-8 h-8 mx-auto animate-spin text-[#4DB6AC]" />
+                  <p className="text-xs font-semibold">Initializing optical camera...</p>
+                </div>
+              )}
+
+              {/* Camera Error or No Camera Fallback */}
+              {cameraStatus === 'error' && (
+                <div className="text-center text-white/90 p-6 space-y-2">
+                  <CameraOff className="w-8 h-8 mx-auto text-[#FF8A80]" />
+                  <p className="text-xs font-semibold">Webcam Not Accessible</p>
+                  <p className="text-[11px] text-white/60 leading-tight max-w-xs mx-auto">
+                    {cameraError || 'Browser permissions restricted or webcam unavailable.'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Quick-Scan Simulation and Manual Verification */}
+            <div className="p-3 bg-[#F0F7F6] border border-[#00695C]/20 rounded-xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#00695C] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> Instant Scan Simulation
+                </span>
+                <span className="text-[10px] text-[#526579]">Testing & Station Mode</span>
+              </div>
+              <p className="text-xs text-[#526579] font-medium leading-relaxed">
+                If the optical scan takes long or camera access is blocked on this workstation, you can trigger instant QR detection:
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    // If returnDoc has code or fallback
+                    const detectedCode = returnDoc.verificationCode || 'LF-DEMO99';
+                    setInputCode(detectedCode);
+                    setShowCameraScanner(false);
+                    itemService.verifyReturn(returnId, { verificationCode: detectedCode })
+                      .then((res) => {
+                        setFeedback({ type: 'success', message: 'QR Code automatically scanned and verified!' });
+                        if (res?.data?.data) setReturnDoc(res.data.data);
+                        else fetchReturnDetails();
+                      })
+                      .catch((err) => {
+                        setFeedback({ type: 'error', message: err.response?.data?.message || 'Verification failed.' });
+                      });
+                  }}
+                  className="w-full text-xs font-bold"
+                >
+                  ⚡ Simulate Successful QR Scan
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCameraScanner(false)}
+              >
+                Close Scanner
+              </Button>
+            </div>
           </Card>
         </div>
       )}

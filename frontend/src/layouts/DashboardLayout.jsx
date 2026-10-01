@@ -18,7 +18,9 @@ import {
   Activity,
   Layers,
   BarChart3,
-  Printer
+  Printer,
+  MapPin,
+  Award
 } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
@@ -275,6 +277,18 @@ export const DashboardLayout = () => {
                     {unreadCount}
                   </span>
                 )}
+              </NavLink>
+              <NavLink to="/campus-map" className={navItemClass}>
+                <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 text-[#00695C]" />
+                </div>
+                <span>Campus Map &amp; Heatmap</span>
+              </NavLink>
+              <NavLink to="/honor-wall" className={navItemClass}>
+                <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                  <Award className="w-4 h-4 text-[#FF9800]" />
+                </div>
+                <span>Honor Wall &amp; Karma</span>
               </NavLink>
               <NavLink to="/profile" className={navItemClass}>
                 <div className="w-5 h-5 flex items-center justify-center shrink-0">

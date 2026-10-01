@@ -14,6 +14,8 @@ import BrowseLost from '../pages/BrowseLost.jsx';
 import BrowseFound from '../pages/BrowseFound.jsx';
 import ItemDetails from '../pages/ItemDetails.jsx';
 import Guidelines from '../pages/Guidelines.jsx';
+import CampusMap from '../pages/CampusMap.jsx';
+import HonorWall from '../pages/HonorWall.jsx';
 import Contact from '../pages/Contact.jsx';
 import Login from '../pages/Login.jsx';
 import Register from '../pages/Register.jsx';
@@ -63,6 +65,10 @@ export const AppRoutes = () => {
         <Route path="/items/:id" element={<ItemDetails />} />
         <Route path="/guidelines" element={<Guidelines />} />
         <Route path="/how-it-works" element={<Guidelines />} />
+        <Route path="/campus-map" element={<CampusMap />} />
+        <Route path="/map" element={<CampusMap />} />
+        <Route path="/honor-wall" element={<HonorWall />} />
+        <Route path="/karma" element={<HonorWall />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
