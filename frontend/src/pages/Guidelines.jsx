@@ -87,7 +87,7 @@ export const Guidelines = () => {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <div className="app-container py-12 space-y-12">
       {/* Header */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#E0F2F1] border border-[#00695C]/30 text-[#00695C] text-xs font-bold shadow-2xs">

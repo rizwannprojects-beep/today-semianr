@@ -15,7 +15,7 @@ export const StatusBadge = ({ status = 'open', className = '' }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide border uppercase ${style.bg} ${style.text} ${style.border} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide border uppercase whitespace-nowrap shrink-0 ${style.bg} ${style.text} ${style.border} ${className}`}
     >
       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-80" />
       {label}
@@ -24,4 +24,3 @@ export const StatusBadge = ({ status = 'open', className = '' }) => {
 };
 
 export default StatusBadge;
-

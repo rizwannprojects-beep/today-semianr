@@ -50,7 +50,7 @@ export const Home = () => {
     <div className="space-y-16 pb-20">
       {/* 1. HERO SECTION */}
       <section className="bg-gradient-to-b from-[#E0F2F1]/50 via-[#F7FAFC] to-[#F7FAFC] border-b border-[#D9E2E8] pt-12 pb-16 sm:pt-16 sm:pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="app-container">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Headlines & Actions */}
             <div className="lg:col-span-7 space-y-6 text-left">
@@ -166,7 +166,7 @@ export const Home = () => {
       </section>
 
       {/* 2. HOW IT WORKS SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="app-container">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E0F2F1] text-[#00695C] text-xs font-bold uppercase tracking-wider mb-2">
             Campus Recovery Protocol
@@ -237,7 +237,7 @@ export const Home = () => {
       </section>
 
       {/* 3. RECENT FOUND ITEMS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <section className="app-container space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#D9E2E8] pb-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-[#16324F]">
@@ -312,7 +312,7 @@ export const Home = () => {
       </section>
 
       {/* 4. WHY CAMPUS LOST & FOUND */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="app-container">
         <div className="bg-[#F0F7F6] border border-[#B2DFDB] rounded-2xl p-8 sm:p-10 space-y-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E0F2F1] text-[#00695C] text-xs font-bold uppercase tracking-wider mb-2">
@@ -361,7 +361,7 @@ export const Home = () => {
       </section>
 
       {/* 5. SAFE OWNERSHIP VERIFICATION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="app-container">
         <div className="rounded-2xl border border-[#B2DFDB] bg-white p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
           <div className="flex items-start gap-4">
             <div className="p-3.5 rounded-xl bg-[#E0F2F1] border border-[#B2DFDB] text-[#00695C] shrink-0">
@@ -385,7 +385,7 @@ export const Home = () => {
       </section>
 
       {/* 6. CAMPUS HOLDING DESK & CONTACT DESK */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="app-container">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Campus Holding Desks */}
           <div className="lg:col-span-7 bg-white border border-[#D9E2E8] rounded-2xl p-6 shadow-xs space-y-4">

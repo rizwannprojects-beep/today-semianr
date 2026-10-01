@@ -98,7 +98,7 @@ export const Matches = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+    <div className="space-y-6">
       {/* Header */}
       <div className="border-b border-[#D9E2E8] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

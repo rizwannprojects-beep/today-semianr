@@ -4,7 +4,7 @@ import { Compass, ShieldCheck, Mail, Phone, MapPin } from 'lucide-react';
 export const Footer = () => {
   return (
     <footer className="border-t border-[#D9E2E8] bg-white text-[#526579] text-xs mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="app-container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Col 1: System Info */}
           <div className="space-y-3">

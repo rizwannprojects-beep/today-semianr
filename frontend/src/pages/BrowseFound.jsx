@@ -124,7 +124,7 @@ export const BrowseFound = () => {
     sortBy !== 'newest';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="app-container py-10 space-y-8">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#D9E2E8] pb-6">
         <div>
